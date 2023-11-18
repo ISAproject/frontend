@@ -1,6 +1,7 @@
 
 import './App.css';
 import UserComponent from './components/UserComponent/UserComponent';
+import UserViewContainer from './containers/UserViewContainer/UserViewContainer';
 import CompanyComponent from './components/companyComponent/companyComponent';
 
 import { ThemeProvider } from '@mui/material';
@@ -17,6 +18,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<UserComponent/>}></Route>
+          <Route path="/user/page" element={<UserViewContainer/>}></Route>
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
           <Route path="/company/:1" element={<CompanyComponent/>}></Route>
         </Routes>

@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import './user-component.css';
 import { GetUserById,Update } from '../../services/UserService';
 
-function UserComponent() {
+function UserComponent({userInfoFunction}) {
   const [open, setOpen] = React.useState(false);
 
   let user={
@@ -28,7 +28,7 @@ function UserComponent() {
 
   const handleChange = (field) => (event) => {
     setUserData({ ...userData, [field]: event.target.value });
-    console.log(userData)
+    
   };
 
 
@@ -42,7 +42,6 @@ function UserComponent() {
   };
 
   const handleClose = () => {
-    console.log(userData);
     setOpen(false);
   };
 
@@ -57,6 +56,7 @@ function UserComponent() {
   const handleSubmit = () => {
     if(validateUserData()){
       Update(1,userData);
+      userInfoFunction();
       setOpen(false);
     }
     else{
@@ -85,6 +85,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('username')}
               error={!userData.username}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -95,6 +96,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('first_name')}
               error={!userData.first_name}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -105,6 +107,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('last_name')}
               error={!userData.last_name}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -115,6 +118,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('state')}
               error={!userData.state}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -125,6 +129,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('city')}
               error={!userData.city}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -135,6 +140,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('tel_number')}
               error={!userData.tel_number}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -145,6 +151,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('occupation')}
               error={!userData.occupation}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -155,6 +162,7 @@ function UserComponent() {
               className='text-field'
               onChange={handleChange('company_info')}
               error={!userData.company_info}
+              margin='normal'
             />
         </DialogContent>
         <DialogActions>
