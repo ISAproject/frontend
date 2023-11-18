@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { GetCompanyById } from "../../services/CompanyService";
+import { useParams } from 'react-router-dom';
 
 
 function CompanyComponent() {
+    const id  = useParams().id;
+
     const [companyData, setCompanyData] = useState({
         id: 0,
         name: "",
@@ -15,12 +18,12 @@ function CompanyComponent() {
 
     useEffect(() => {
         console.log('Fetching company data...');
-        GetCompanyById(1)
+        GetCompanyById(id)
             .then((res) => {
                 console.log(res)
                 setCompanyData(res.data)})
             .catch((error) => console.error('Error fetching company data:', error));
-    }, []);
+    }, [id]);
 
     console.log(companyData);
 
