@@ -1,13 +1,15 @@
-
-import { createTheme,colors } from '@mui/material';
+import { createTheme, colors } from '@mui/material';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: colors.green[500], 
+      main: colors.blue[500],
     },
     secondary: {
-      main: colors.orange[500], 
+      main: colors.teal[900],
+    },
+    accent: {
+      main: colors.grey[50],
     },
   },
   // Add more theme configurations as needed

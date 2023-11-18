@@ -8,6 +8,8 @@ import theme from './styles/theme';
 
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import AllCompaniesComponent from './components/allCompaniesComponent/allCompaniesComponent';
+import HomePageContainer from './containers/homePageContainer/home-page-container';
+import RegisterUserContainer from './containers/registerUserContainer/register-user-container';
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Route path="/" element={<UserComponent/>}></Route>
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
           <Route path="/company/:1" element={<CompanyComponent/>}></Route>
+          <Route path="/home" element={<HomePageContainer/>}></Route>
+          <Route path="/register" element={<RegisterUserContainer/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
