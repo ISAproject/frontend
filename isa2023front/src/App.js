@@ -7,6 +7,7 @@ import { ThemeProvider } from '@mui/material';
 import theme from './styles/theme';
 
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
+import AllCompaniesComponent from './components/allCompaniesComponent/allCompaniesComponent';
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -16,7 +17,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<UserComponent/>}></Route>
-          <Route path="/company" element={<CompanyComponent/>}></Route>
+          <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
+          <Route path="/company/:1" element={<CompanyComponent/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
