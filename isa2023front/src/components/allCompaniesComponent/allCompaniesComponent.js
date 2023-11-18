@@ -11,7 +11,7 @@ function CompanyCard({ company }) {
 
     return (
         <Link to={companyDetailsLink} style={{ textDecoration: 'none' }}>
-            <Card variant="outlined" sx={{ minWidth: 275, margin: 2, flex: '1 1 300px', cursor: 'pointer' }} onClick={() => openCompanyDetails(company.id)}>
+            <Card variant="outlined" sx={{ minWidth: 275, margin: 2, flex: '1 1 300px', cursor: 'pointer' }}>
                 <CardContent>
                     <Typography variant="h5" component="div">
                         {company.name}
@@ -51,10 +51,6 @@ function AllCompaniesComponent() {
             </Box>
         </>
     );
-}
-
-function openCompanyDetails(id) {
-    console.log("kliknuto " + id);
 }
 
 export default AllCompaniesComponent;
