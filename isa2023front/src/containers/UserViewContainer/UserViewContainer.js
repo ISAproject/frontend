@@ -2,6 +2,7 @@ import UserInfoComponent from "../../components/UserInfoComponent/UserInfoCompon
 import UserComponent from "../../components/UserComponent/UserComponent"
 import { GetUserById } from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
+import { Box } from "@mui/material";
 function UserViewContainer() {
 
   
@@ -27,10 +28,10 @@ function UserViewContainer() {
     }
 
     return (
-      <div>
+      <Box width={300}>
         <UserInfoComponent user={userData}/>
         <UserComponent userInfoFunction={handleUserInfo}/>
-      </div>
+      </Box>
     );
   }
   
