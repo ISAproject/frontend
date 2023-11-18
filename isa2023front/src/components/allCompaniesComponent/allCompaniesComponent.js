@@ -44,7 +44,7 @@ function AllCompaniesComponent() {
     return (
         <>
             <h1 sx={{ textAlign: 'center' }}>Companies</h1>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'start' }}>
                 {companies.map((company) => (
                     <CompanyCard key={company.id} company={company} />
                 ))}
