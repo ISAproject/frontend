@@ -8,6 +8,11 @@ import { Link } from 'react-router-dom';
 import { Button,TextField,Rating} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import './allCompaniesComponent.css';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+
 function CompanyCard({ company }) {
     const companyDetailsLink = `/company/${company.id}`;
 
@@ -74,6 +79,25 @@ function AllCompaniesComponent() {
 
   return (
     <>
+      <AppBar position="static" color='secondary'>
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="accent"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
+          <span style={{ fontWeight: 'bold' }}>MediConnect</span>
+          </Typography>
+          <Button color="accent" component={Link} to="/home">Home</Button>
+          <Button color="accent">Login</Button>
+          <Button color="accent">Register</Button>
+        </Toolbar>
+      </AppBar>
       <h1>Companies</h1>
       <Box 
         borderRadius={10}  // Set the border radius

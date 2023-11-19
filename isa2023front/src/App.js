@@ -10,6 +10,7 @@ import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import AllCompaniesComponent from './components/allCompaniesComponent/allCompaniesComponent';
 import HomePageContainer from './containers/homePageContainer/home-page-container';
 import RegisterUserContainer from './containers/registerUserContainer/register-user-container';
+import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent/updateCompanyAdminComponent';
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/user/page/:id" element={<UserViewContainer/>}></Route>
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
           <Route path="/company/:id" element={<CompanyComponent/>}></Route>
+          <Route path="/companyAdmin/:id" element={<UpdateCompanyAdminComponent/>}></Route>
           <Route path="/home" element={<HomePageContainer/>}></Route>
           <Route path="/register" element={<RegisterUserContainer/>}></Route>
         </Routes>
