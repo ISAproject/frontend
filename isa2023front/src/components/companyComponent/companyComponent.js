@@ -127,6 +127,10 @@ function CompanyComponent() {
     };
 
     const handleSaveClick = () => {
+        if(companyData.avgGrade < 1 || companyData.avgGrade > 5){
+            alert("Average grade has to be between 1 and 5!");
+            return;
+        }
         UpdateCompany(companyData.id, companyData)
             .then(() => {
                 console.log('Company data updated successfully');
@@ -158,12 +162,6 @@ function CompanyComponent() {
         setSelectedFreeDates(selectedFreeDates);
         companyData.equipemntsFreeMilliseconds = selectedFreeDates;
     };
-
-    // const handleDatePickerChange = (date) => {
-    //     var convertedDate = new Date(date)
-
-    //     selectedFreeDates.push(convertedDate.getTime());
-    // };
 
     const handleDatePickerChange = (date) => {
         var convertedDate = new Date(date);
@@ -207,6 +205,8 @@ function CompanyComponent() {
         companyData.equipemntsFreeMilliseconds = updatedFreeDates;
 
         UpdateCompany(id, companyData)
+
+        alert("Reservation successfully made!");
     };
 
     return (

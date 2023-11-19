@@ -87,6 +87,7 @@ function UpdateCompanyAdminComponent() {
           };
           UpdateUser(id, user);
 
+          alert("Your profile info are successfully updated!")
         }
       };
 
