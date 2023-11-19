@@ -22,6 +22,7 @@ const RegisterUserFormComponent = () => {
     city: '',
     role: '',
     company_info: '',
+    occupation: ''
   });
 
   const [errors, setErrors] = useState({
@@ -36,6 +37,7 @@ const RegisterUserFormComponent = () => {
     city: false,
     role: false,
     company_info: false,
+    occupation: false
   });
 
   const handleChange = (e) => {
@@ -53,7 +55,7 @@ const RegisterUserFormComponent = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const requiredFields = ['username', 'email', 'first_name', 'last_name', 'tel_number', 'state', 'city', 'company_info'];
+    const requiredFields = ['username', 'occupation', 'email', 'first_name', 'last_name', 'tel_number', 'state', 'city', 'company_info'];
     const isOccupationSelected = formData.role !== '';
 
     const hasRequiredFieldErrors = requiredFields.some((field) => formData[field] === '' || errors[field]);
@@ -73,14 +75,38 @@ const RegisterUserFormComponent = () => {
         state: formData.state,
         city: formData.city,
         tel_number: formData.tel_number,
-        occupation: '',
         password: formData.password,
         role: formData.role, 
         company_info: formData.company_info,
+        occupation: formData.occupation
       };
       GetUserByEmail(user.email).then((res)=>{
-        if(!res.data){
-          AddUser(user);
+        if (!res.data) {
+          AddUser(user)
+            .then((addedUser) => {
+              console.log('Added user:', addedUser);
+              setFormData({
+                username: '',
+                password: '',
+                confirmPassword: '',
+                email: '',
+                first_name: '',
+                last_name: '',
+                tel_number: '',
+                state: '',
+                city: '',
+                role: '',
+                company_info: '',
+                occupation:''
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
+        
+        else{
+          alert('Email adress you entered already exists in the system.');
         }
       });
 
@@ -91,34 +117,37 @@ const RegisterUserFormComponent = () => {
     <div>
       <h2 style={{ color: theme.palette.secondary.main }}>Register User</h2>
       <form onSubmit={handleSubmit}>
-      <TextField  color='secondary' size='small' id="outlined-basic" label="Username" variant="outlined" name="username" value={formData.username} onChange={handleChange}/>
+      <TextField  color='secondary' size='small' label="Username" variant="outlined" name="username" value={formData.username} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Password" variant="outlined" type="password" name="password" value={formData.password} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Password" variant="outlined" type="password" name="password" value={formData.password} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Confirm Password" variant="outlined" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Confirm Password" variant="outlined" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Email" variant="outlined" type="email" name="email" value={formData.email} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Email" variant="outlined" type="email" name="email" value={formData.email} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Name" variant="outlined" type="text" name="first_name" value={formData.first_name} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Name" variant="outlined" type="text" name="first_name" value={formData.first_name} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Surname" variant="outlined" type="text" name="last_name" value={formData.last_name} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Surname" variant="outlined" type="text" name="last_name" value={formData.last_name} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Phone Number" variant="outlined" type="tel" name="tel_number" value={formData.tel_number} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Phone Number" variant="outlined" type="tel" name="tel_number" value={formData.tel_number} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="State" variant="outlined" type="text" name="state" value={formData.state} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="State" variant="outlined" type="text" name="state" value={formData.state} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="City" variant="outlined" type="text" name="city" value={formData.city} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="Occupation" variant="outlined" type="text" name="occupation" value={formData.occupation} onChange={handleChange}/>
         <br />
 
-        <TextField color='secondary' size='small' id="outlined-basic" label="Company Info" variant="outlined" type="text" name="company_info" value={formData.company_info} onChange={handleChange}/>
+        <TextField color='secondary' size='small'  label="City" variant="outlined" type="text" name="city" value={formData.city} onChange={handleChange}/>
+        <br />
+
+        <TextField color='secondary' size='small'  label="Company Info" variant="outlined" type="text" name="company_info" value={formData.company_info} onChange={handleChange}/>
         <br />
         <FormControl style={{ marginBottom: '16px', width:'220px', height:'50px' }} fullWidth variant="outlined" required error={errors.role}>
           <InputLabel id="occupation-label">Role</InputLabel>

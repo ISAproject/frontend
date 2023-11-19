@@ -6,11 +6,11 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import RegisterUserFormComponent from '../../components/registerUserFormComponent/register-user-form-component'
 import { Link } from 'react-router-dom';
+import LoginFormComponent from '../../components/loginFormComponent/login-form-component';
 
 
-export default function RegisterUserContainer() {
+export default function LoginUserContainer() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color='secondary'>
@@ -32,7 +32,7 @@ export default function RegisterUserContainer() {
           <Button color="accent" component={Link} to="/register">Register</Button>
         </Toolbar>
       </AppBar>
-      <RegisterUserFormComponent/>
+      <LoginFormComponent/>
     </Box>
   );
 }

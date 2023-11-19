@@ -16,10 +16,6 @@ export const AddUser=(user)=>{
     return axios.post("http://localhost:8090/api/v1/user/add", user);
 }
 
-export const verifyUser=(userId,user)=>{
-    return axios.post("http://localhost:8090/api/v1/user/verify/"+userId, user);
-}
-
 export const GetCompanyAdministrators=()=>{
-    return axios.get("http://localhost:8090/api/v1/user/companyAdministrators")
+    return axios.get("http://localhost:8090/api/v1/user/companyAdministrators");
 }

@@ -9,9 +9,11 @@ import theme from './styles/theme';
 
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import AllCompaniesComponent from './components/allCompaniesComponent/allCompaniesComponent';
-import EquipmentSearchComponent from './components/equipmentSearchComponent/equipmentSearchComponent';
 import HomePageContainer from './containers/homePageContainer/home-page-container';
 import RegisterUserContainer from './containers/registerUserContainer/register-user-container';
+import VerifyUserContainer from './containers/verifyUserContainer/verify-user-container';
+import LoginUserContainer from './containers/loginUserContainer/login-user-container';
+import LoggedUserContainer from './containers/loggedUserContainer/logged-user-container';
 import EquipmentsSearchContainer from "./containers/equipmentsSearchContainer/EquipmentsSearchContainer";
 import EquipmentComponent from "./components/equipmentComponent/equipmentComponent";
 import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent/updateCompanyAdminComponent';
@@ -30,6 +32,9 @@ function App() {
           <Route path="/companyAdmin/:id" element={<UpdateCompanyAdminComponent/>}></Route>
           <Route path="/home" element={<HomePageContainer/>}></Route>
           <Route path="/register" element={<RegisterUserContainer/>}></Route>
+          <Route path="/verify/:id" element={<VerifyUserContainer/>}></Route>
+          <Route path="/login" element={<LoginUserContainer/>}></Route>
+          <Route path="/logged/:userId" element={<LoggedUserContainer/>}></Route>
           <Route path="/equipments" element={<EquipmentsSearchContainer/>}></Route>
         </Routes>
       </BrowserRouter>
