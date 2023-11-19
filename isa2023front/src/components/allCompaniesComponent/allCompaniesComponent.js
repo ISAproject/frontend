@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { Button,TextField,Rating} from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
-
+import './allCompaniesComponent.css';
 function CompanyCard({ company }) {
     const companyDetailsLink = `/company/${company.id}`;
 
@@ -75,25 +75,52 @@ function AllCompaniesComponent() {
   return (
     <>
       <h1>Companies</h1>
+      <Box 
+        borderRadius={10}  // Set the border radius
+        padding={5} 
+        sx={{
+          background: 'radial-gradient(ellipse 75% 200px at center,#e5f3d0 40%, transparent 70%)',
+          marginLeft:'60px',
+          marginRight:'60px',
+      }}>
       <Box
         sx={{
           
           display: 'flex',
-          justifyContent:'space-between'
+          flexDirection:'column',
+          marginLeft:'100px',
+          marginRight:'100px',
+          
         }}
       >
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent:'center',
+            flexDirection:'column',
+            marginBottom:'10px'
           }}>
           <TextField 
-          id="outlined-basic" 
-          label="Search" 
-          variant="outlined" 
-          color='secondary'
-          value={textboxValue}
-          onChange={handleTextBoxChange}/>  
+            id="outlined-basic" 
+            label="Search" 
+            variant="outlined" 
+            color='secondary'
+            value={textboxValue}
+            onChange={handleTextBoxChange}
+            fullWidth
+            margin='normal'
+            focused/>  
+          <label className='labelClass'>Rating: </label>
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection:'row',
+            width:'200px',
+            margin:'normal',
+            justifyContent:'space-between'
+          }}>
+          
           <Rating
             name="hover-feedback"
             value={ratingValue}
@@ -106,20 +133,23 @@ function AllCompaniesComponent() {
               setHover(newHover);
             }}
             size='large'
-            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit"/>}
           />
-          {ratingValue !== null && (
-            <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : ratingValue]}</Box>
-          )}
-        </Box>
+          
+            {ratingValue !== null && (
+              <Box sx={{ ml: 2,color:'secondary' }}>{labels[hover !== -1 ? hover : ratingValue]}</Box>
+            )}
+          </Box>  
+        </Box> 
 
         <Button variant="contained" onClick={handleSearch} color='secondary'>Search</Button>
       </Box>
-
+      </Box>         
 
       {companies.map((company) => (
           <CompanyCard key={company.id} company={company} />
       ))}
+      
     </>
   );
 }

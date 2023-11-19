@@ -9,7 +9,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { GetUserById, UpdateUser } from '../../services/UserService';
 
-function UserUpdateComponent({userInfoFunction}) {
+function UserUpdateComponent({userInfoFunction,userId}) {
   const [open, setOpen] = React.useState(false);
 
   let user={
@@ -20,7 +20,9 @@ function UserUpdateComponent({userInfoFunction}) {
     city:"",
     tel_number:"",
     occupation:"",
-    company_info:""
+    company_info:"",
+    role:"",
+    verified:false
 
   }
   const [userData,setUserData]=useState(user);
@@ -29,12 +31,11 @@ function UserUpdateComponent({userInfoFunction}) {
     setUserData({ ...userData, [field]: event.target.value });
     
   };
-
-
-  
   useEffect(()=>{
-    GetUserById(1).then((res)=>setUserData(res.data));
-  },[open]);
+    
+    GetUserById(userId).then((res)=>setUserData(res.data));
+
+  },[open,userId]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -54,8 +55,7 @@ function UserUpdateComponent({userInfoFunction}) {
   };
   const handleSubmit = () => {
     if(validateUserData()){
-      UpdateUser(1,userData);
-      userInfoFunction();
+      UpdateUser(userId,userData).then(()=>userInfoFunction());
       setOpen(false);
     }
     else{

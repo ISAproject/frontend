@@ -3,7 +3,7 @@ import UserUpdateComponent from "../../components/UserComponent/UserUpdateCompon
 import { GetUserById } from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
 import { Box } from "@mui/material";
-
+import { useParams } from 'react-router-dom';
 function UserViewContainer() {  
     let user={
         username:"",
@@ -13,23 +13,26 @@ function UserViewContainer() {
         city:"",
         tel_number:"",
         occupation:"",
-        company_info:""
+        company_info:"",
+        role:"",
+        verified:""
     }
     const [userData,setUserData]=useState(user);
-    
+    const userId = useParams().id;
 
     useEffect(()=>{
-      GetUserById(1).then((res)=>setUserData(res.data));
-    },[]);
+      GetUserById(userId).then((res)=>setUserData(res.data));
+    },[userId]);
 
     const handleUserInfo=()=>{
-      GetUserById(1).then((res)=>setUserData(res.data));
+      console.log("works")
+      GetUserById(userId).then((res)=>setUserData(res.data));
     }
 
     return (
       <Box width={300}>
         <UserInfoComponent user={userData}/>
-        <UserUpdateComponent userInfoFunction={handleUserInfo}/>
+        <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
       </Box>
     );
   }
