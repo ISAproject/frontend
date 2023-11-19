@@ -7,10 +7,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import './user-component.css';
-import { GetUserById,Update } from '../../services/UserService';
+import { GetUserById, UpdateUser } from '../../services/UserService';
 
-function UserComponent({userInfoFunction}) {
+function UserUpdateComponent({userInfoFunction}) {
   const [open, setOpen] = React.useState(false);
 
   let user={
@@ -55,7 +54,7 @@ function UserComponent({userInfoFunction}) {
   };
   const handleSubmit = () => {
     if(validateUserData()){
-      Update(1,userData);
+      UpdateUser(1,userData);
       userInfoFunction();
       setOpen(false);
     }
@@ -82,7 +81,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.username}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('username')}
               error={!userData.username}
               margin='normal'
@@ -93,7 +91,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.first_name}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('first_name')}
               error={!userData.first_name}
               margin='normal'
@@ -104,7 +101,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.last_name}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('last_name')}
               error={!userData.last_name}
               margin='normal'
@@ -115,7 +111,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.state}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('state')}
               error={!userData.state}
               margin='normal'
@@ -126,7 +121,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.city}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('city')}
               error={!userData.city}
               margin='normal'
@@ -137,7 +131,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.tel_number}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('tel_number')}
               error={!userData.tel_number}
               margin='normal'
@@ -148,7 +141,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.occupation}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('occupation')}
               error={!userData.occupation}
               margin='normal'
@@ -159,7 +151,6 @@ function UserComponent({userInfoFunction}) {
               defaultValue={userData.company_info}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('company_info')}
               error={!userData.company_info}
               margin='normal'
@@ -174,4 +165,4 @@ function UserComponent({userInfoFunction}) {
   );
 }
 
-export default UserComponent;
+export default UserUpdateComponent;

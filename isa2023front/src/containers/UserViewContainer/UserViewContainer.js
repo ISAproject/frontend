@@ -1,11 +1,10 @@
 import UserInfoComponent from "../../components/UserInfoComponent/UserInfoComponent";
-import UserComponent from "../../components/UserComponent/UserComponent"
+import UserUpdateComponent from "../../components/UserComponent/UserUpdateComponent"
 import { GetUserById } from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
 import { Box } from "@mui/material";
-function UserViewContainer() {
 
-  
+function UserViewContainer() {  
     let user={
         username:"",
         first_name:"",
@@ -30,7 +29,7 @@ function UserViewContainer() {
     return (
       <Box width={300}>
         <UserInfoComponent user={userData}/>
-        <UserComponent userInfoFunction={handleUserInfo}/>
+        <UserUpdateComponent userInfoFunction={handleUserInfo}/>
       </Box>
     );
   }
