@@ -7,10 +7,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import './user-component.css';
-import { GetUserById,Update } from '../../services/UserService';
+import { GetUserById, UpdateUser } from '../../services/UserService';
 
-function UserComponent() {
+function UserUpdateComponent({userInfoFunction,userId}) {
   const [open, setOpen] = React.useState(false);
 
   let user={
@@ -21,28 +20,28 @@ function UserComponent() {
     city:"",
     tel_number:"",
     occupation:"",
-    company_info:""
+    company_info:"",
+    role:"",
+    verified:false
 
   }
   const [userData,setUserData]=useState(user);
 
   const handleChange = (field) => (event) => {
     setUserData({ ...userData, [field]: event.target.value });
-    console.log(userData)
+    
   };
-
-
-  
   useEffect(()=>{
-    GetUserById(1).then((res)=>setUserData(res.data));
-  },[open]);
+    
+    GetUserById(userId).then((res)=>setUserData(res.data));
+
+  },[open,userId]);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
-    console.log(userData);
     setOpen(false);
   };
 
@@ -56,7 +55,7 @@ function UserComponent() {
   };
   const handleSubmit = () => {
     if(validateUserData()){
-      Update(1,userData);
+      UpdateUser(userId,userData).then(()=>userInfoFunction());
       setOpen(false);
     }
     else{
@@ -67,7 +66,7 @@ function UserComponent() {
   
   return (
     <React.Fragment>
-      <Button variant="contained" color='secondary' onClick={handleClickOpen}>
+      <Button variant="contained" color='secondary' onClick={handleClickOpen}>  
         Update user info
       </Button>
       <Dialog open={open} onClose={handleClose}>
@@ -82,9 +81,9 @@ function UserComponent() {
               defaultValue={userData.username}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('username')}
               error={!userData.username}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -92,9 +91,9 @@ function UserComponent() {
               defaultValue={userData.first_name}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('first_name')}
               error={!userData.first_name}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -102,9 +101,9 @@ function UserComponent() {
               defaultValue={userData.last_name}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('last_name')}
               error={!userData.last_name}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -112,9 +111,9 @@ function UserComponent() {
               defaultValue={userData.state}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('state')}
               error={!userData.state}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -122,9 +121,9 @@ function UserComponent() {
               defaultValue={userData.city}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('city')}
               error={!userData.city}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -132,9 +131,9 @@ function UserComponent() {
               defaultValue={userData.tel_number}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('tel_number')}
               error={!userData.tel_number}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -142,9 +141,9 @@ function UserComponent() {
               defaultValue={userData.occupation}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('occupation')}
               error={!userData.occupation}
+              margin='normal'
             />
             <TextField
               autoFocus
@@ -152,9 +151,9 @@ function UserComponent() {
               defaultValue={userData.company_info}
               fullWidth
               variant="filled"
-              className='text-field'
               onChange={handleChange('company_info')}
               error={!userData.company_info}
+              margin='normal'
             />
         </DialogContent>
         <DialogActions>
@@ -166,4 +165,4 @@ function UserComponent() {
   );
 }
 
-export default UserComponent;
+export default UserUpdateComponent;

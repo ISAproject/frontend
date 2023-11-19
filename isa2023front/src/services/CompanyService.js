@@ -11,3 +11,7 @@ export const GetAllCompanies=()=>{
 export const UpdateCompany=(id, company)=>{
     return axios.put("http://localhost:8090/api/v1/company/"+id, company);
 }
+export const GetSearchedCompanies=(content,rating)=>{
+    if(content==='')return axios.get("http://localhost:8090/api/v1/company/searchRating/"+rating);
+    return axios.get("http://localhost:8090/api/v1/company/search/"+content+"/"+rating);
+}
