@@ -155,11 +155,23 @@ function CompanyComponent() {
         companyData.equipemntsFreeMilliseconds = selectedFreeDates;
     };
 
-    const handleDatePickerChange = (date) => {
-        var convertedDate = new Date(date)
+    // const handleDatePickerChange = (date) => {
+    //     var convertedDate = new Date(date)
 
-        selectedFreeDates.push(convertedDate.getTime());
+    //     selectedFreeDates.push(convertedDate.getTime());
+    // };
+
+    const handleDatePickerChange = (date) => {
+        var convertedDate = new Date(date);
+        const newSelectedFreeDates = [...selectedFreeDates, convertedDate.getTime()];
+    
+        setSelectedFreeDates(newSelectedFreeDates);
+        setCompanyData((prevData) => ({
+            ...prevData,
+            equipemntsFreeMilliseconds: newSelectedFreeDates,
+        }));
     };
+    
 
     const handleReservationDateChange = (event) => {
         const selectedDate = event.target.value;
@@ -273,7 +285,7 @@ function CompanyComponent() {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Name</TableCell>
+                                        <TableCell>Equipment name</TableCell>
                                         <TableCell>Type</TableCell>
                                         <TableCell>Grade</TableCell>
                                     </TableRow>
