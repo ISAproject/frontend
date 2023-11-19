@@ -14,6 +14,7 @@ import HomePageContainer from './containers/homePageContainer/home-page-containe
 import RegisterUserContainer from './containers/registerUserContainer/register-user-container';
 import EquipmentsSearchContainer from "./containers/equipmentsSearchContainer/EquipmentsSearchContainer";
 import EquipmentComponent from "./components/equipmentComponent/equipmentComponent";
+import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent/updateCompanyAdminComponent';
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
           <Route path="/company/:id" element={<CompanyComponent/>}></Route>
           <Route path="/equipment/:id" element={<EquipmentComponent/>}></Route>
+          <Route path="/companyAdmin/:id" element={<UpdateCompanyAdminComponent/>}></Route>
           <Route path="/home" element={<HomePageContainer/>}></Route>
           <Route path="/register" element={<RegisterUserContainer/>}></Route>
           <Route path="/equipments" element={<EquipmentsSearchContainer/>}></Route>

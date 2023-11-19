@@ -22,3 +22,6 @@ export const findEquipmentByComapany=(companyId)=>{
 export const findEquipmentById=(id)=>{
     return axios.get("http://localhost:8090/api/v1/equipment/"+id);
 }
+export const GetEquipmentByCompanyId=(companyId)=>{
+    return axios.get("http://localhost:8090/api/v1/equipment/forCompany/"+companyId);
+}
