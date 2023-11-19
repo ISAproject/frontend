@@ -55,7 +55,16 @@ function EquipmentSearchComponent() {
             .catch((error) => console.error('Error fetching equipments data:', error));
 
     }
+    const handleReset=()=>{
+        GetEquipments()
+            .then((res) => {
+                setEquipments(res.data);
+                setTextboxValue("");
+                setRatingValue(0);
+            })
+            .catch((error) => console.error('Error fetching equipments data:', error));
 
+    }
     function getLabelText(value) {
         return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
     }
@@ -144,6 +153,9 @@ function EquipmentSearchComponent() {
                     </Box>
 
                     <Button variant="contained" onClick={handleSearch} color='secondary'>Search</Button>
+                    <br></br>
+                    <Button variant="contained" onClick={handleReset} color='secondary'>Reset</Button>
+
                 </Box>
             </Box>
 

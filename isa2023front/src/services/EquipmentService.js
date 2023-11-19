@@ -14,7 +14,8 @@ export const findEquipmentByType=(type)=>{
 
 export const findEquipmentByName=(name,rating)=>{
     if(name==='')return axios.get("http://localhost:8090/api/v1/equipment/filtergrade/"+rating);
-    return axios.get("http://localhost:8090/api/v1/equipment/searchbyname/"+name);
+    if(rating<=0) return axios.get("http://localhost:8090/api/v1/equipment/searchbyname/"+name);
+    return axios.get("http://localhost:8090/api/v1/equipment/"+name+"/"+rating);
 }
 export const findEquipmentByComapany=(companyId)=>{
     return axios.get("http://localhost:8090/api/v1/equipment/searchbycompany/"+companyId);
