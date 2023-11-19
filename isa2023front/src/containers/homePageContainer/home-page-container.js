@@ -27,7 +27,7 @@ export default function HomePageContainer() {
           <span style={{ fontWeight: 'bold' }}>MediConnect</span>
           </Typography>
           <Button color="accent" component={Link} to="/home">Home</Button>
-          <Button color="accent">Login</Button>
+          <Button color="accent" component={Link} to="/login">Login</Button>
           <Button color="accent" component={Link} to="/register">Register</Button>
         </Toolbar>
       </AppBar>
