@@ -17,6 +17,7 @@ import LoggedUserContainer from './containers/loggedUserContainer/logged-user-co
 import EquipmentsSearchContainer from "./containers/equipmentsSearchContainer/EquipmentsSearchContainer";
 import EquipmentComponent from "./components/equipmentComponent/equipmentComponent";
 import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent/updateCompanyAdminComponent';
+import CompanyCreationContainer from "./containers/companyCreationContainer/CompanyCreationContainer";
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/login" element={<LoginUserContainer/>}></Route>
           <Route path="/logged/:userId" element={<LoggedUserContainer/>}></Route>
           <Route path="/equipments" element={<EquipmentsSearchContainer/>}></Route>
+          <Route path="/companycreation" element={<CompanyCreationContainer/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

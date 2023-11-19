@@ -48,29 +48,28 @@ function EquipmentComponent() {
         description: "",
         grade: 0,
         quantity: 0,
-        companyId: []
+        companyId: 0
     });
-    const [companies, setCompanies] = useState([]);
+    const [companies, setCompanies] = useState({});
     //const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
+
             try {
-                const equipmentResponse = await findEquipmentById(id);
-                setEquipmentData(equipmentResponse.data);
-
-                const companyResponses = await Promise.all(
-                    equipmentResponse.data.companyId.map((companyId) => GetCompanyById(companyId))
-                );
-
-                const companies = companyResponses.map((res) => res.data);
-                setCompanies(companies);
+                findEquipmentById(id).then((equipment)=>
+                    {
+                        setEquipmentData(equipment.data);
+                        GetCompanyById(equipment.data.companyId).then((companyResponses)=>
+                        {
+                            setCompanies(companyResponses.data);
+                        })
+                    }
+                )
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-        };
 
-        fetchData();
+
     }, [id]);
 
     return (
@@ -95,13 +94,11 @@ function EquipmentComponent() {
                                             <TableCell>{equipmentData.type}</TableCell>
                                             <TableCell>{equipmentData.description}</TableCell>
                                             <TableCell>{equipmentData.grade}</TableCell>
+                                            <TableCell>{companies.name}</TableCell>
 
-                                        {companies
-                                            ? companies.map((company, index) => (
-                                                <TableCell key={index}>{company?.name}</TableCell>
-                                            ))
-                                            : <TableCell>Nothing</TableCell>
-                                        }
+
+
+
 
 
                                 </TableRow>

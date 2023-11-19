@@ -19,3 +19,6 @@ export const AddUser=(user)=>{
 export const GetCompanyAdministrators=()=>{
     return axios.get("http://localhost:8090/api/v1/user/companyAdministrators");
 }
+export const GetLastUser=()=>{
+    return axios.get("http://localhost:8090/api/v1/user/getlastuser");
+}

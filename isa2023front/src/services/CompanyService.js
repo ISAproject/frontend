@@ -15,3 +15,6 @@ export const GetSearchedCompanies=(content,rating)=>{
     if(content==='')return axios.get("http://localhost:8090/api/v1/company/searchRating/"+rating);
     return axios.get("http://localhost:8090/api/v1/company/search/"+content+"/"+rating);
 }
+export const CreateCompany=(company)=>{
+    return axios.post("http://localhost:8090/api/v1/company", company);
+}
