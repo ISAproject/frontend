@@ -46,6 +46,7 @@ const MenuProps = {
 
 function CompanyComponent() {
     const id = useParams().id;
+    const roleFromURL = useParams().role;
 
     const [companyData, setCompanyData] = useState({
         id: 0,
@@ -77,7 +78,10 @@ function CompanyComponent() {
                 setSelectedAdmins(companyRes.data.administratorsId);
                 setSelectedFreeDates(companyRes.data.equipemntsFreeMilliseconds);
                 setEquipment(equipmentRes.data);
-                setRole("companyAdmin");
+                if(roleFromURL == 2)
+                    setRole("companyAdmin");
+                else
+                    setRole("user");
 
                 const adminRes = await GetCompanyAdministrators();
                 const companiesRes = await GetAllCompanies();

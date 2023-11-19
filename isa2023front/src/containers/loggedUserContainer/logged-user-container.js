@@ -11,6 +11,7 @@ import theme from '../../styles/theme';
 import { useParams } from 'react-router-dom';
 import { GetUserById } from '../../services/UserService';
 import  { useState,useEffect } from 'react';
+import AllCompaniesComponent from '../../components/allCompaniesComponent/allCompaniesComponent';
 
 
 export default function LoggedUserContainer() {

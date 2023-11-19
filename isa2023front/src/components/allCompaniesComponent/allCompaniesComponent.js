@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
 function CompanyCard({ company }) {
-    const companyDetailsLink = `/company/${company.id}`;
+    const companyDetailsLink = `/company/${company.id}/0`;
 
     return (
         <Link to={companyDetailsLink} style={{ textDecoration: 'none' }}>
@@ -40,6 +40,7 @@ function AllCompaniesComponent() {
   const [textboxValue,setTextboxValue]=useState('');
   const [ratingValue,setRatingValue]=useState(0);
   const [hover, setHover] = React.useState(-1);
+
 
   useEffect(() => {
     GetAllCompanies()
