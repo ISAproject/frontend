@@ -18,6 +18,8 @@ import EquipmentsSearchContainer from "./containers/equipmentsSearchContainer/Eq
 import EquipmentComponent from "./components/equipmentComponent/equipmentComponent";
 import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent/updateCompanyAdminComponent';
 import CompanyCreationContainer from "./containers/companyCreationContainer/CompanyCreationContainer";
+import ReserveEquipmentComponent from './components/reserveEquipmentComponent/reserve-equipment-component';
+import StepperComponent from './components/reserveEquipmentComponent/stepper-component';
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -38,6 +40,8 @@ function App() {
           <Route path="/logged/:userId" element={<LoggedUserContainer/>}></Route>
           <Route path="/equipments" element={<EquipmentsSearchContainer/>}></Route>
           <Route path="/companycreation" element={<CompanyCreationContainer/>}></Route>
+          <Route path="/company/reserve-equipment/:id" element={<ReserveEquipmentComponent/>}></Route>
+          <Route path="/stepper" element={<StepperComponent/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
