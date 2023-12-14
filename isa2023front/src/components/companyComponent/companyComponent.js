@@ -54,18 +54,15 @@ function CompanyComponent() {
         address: "",
         description: "",
         avgGrade: 0,
-        equipemntsFree: [],
+        predefinedDatesId: [],
         administratorsId: []
     });
 
-    const [companies, setCompanies] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [role, setRole] = useState("companyAdmin");
     const [companyAdministrators, setCompanyAdministrators] = useState([]);
     const [selectedAdmins, setSelectedAdmins] = useState([]);
-    const [selectedFreeDates, setSelectedFreeDates] = useState([]);
     const [equipment, setEquipment] = useState([]);
-    const [reservationDate, setReservationDate] = useState(null);
 
 
     useEffect(() => {
@@ -75,31 +72,13 @@ function CompanyComponent() {
                 const equipmentRes = await GetEquipmentByCompanyId(id);
 
                 setCompanyData(companyRes.data);
-                setSelectedAdmins(companyRes.data.administratorsId);
-                setSelectedFreeDates(companyRes.data.equipemntsFreeMilliseconds);
                 setEquipment(equipmentRes.data);
+
                 if(roleFromURL == 2)
                     setRole("companyAdmin");
                 else
                     setRole("user");
-
-                const adminRes = await GetCompanyAdministrators();
-                const companiesRes = await GetAllCompanies();
-
-
-                const admins = adminRes.data;
-
-                companiesRes.data.forEach((company) => {
-                    company.administratorsId.forEach((admin) => {
-                        if (company.id !== companyData.id) {
-                            const indx = admins.indexOf(admins.find((a) => a.id === admin));
-                            admins.splice(indx, 1);
-                        }
-                    });
-                });
-                setCompanyAdministrators(admins);
-
-                console.log(equipment);
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -123,7 +102,6 @@ function CompanyComponent() {
 
     const handleEditClick = () => {
         setEditMode(true);
-        console.log(equipment);
     };
 
     const handleSaveClick = () => {
@@ -155,58 +133,6 @@ function CompanyComponent() {
         const selectedAdmins = event.target.value;
         setSelectedAdmins(selectedAdmins);
         companyData.administratorsId = selectedAdmins;
-    };
-
-    const handleFreeDatesChange = (event) => {
-        const selectedFreeDates = event.target.value;
-        setSelectedFreeDates(selectedFreeDates);
-        companyData.equipemntsFreeMilliseconds = selectedFreeDates;
-    };
-
-    const handleDatePickerChange = (date) => {
-        var convertedDate = new Date(date);
-        const newSelectedFreeDates = [...selectedFreeDates, convertedDate.getTime()];
-    
-        setSelectedFreeDates(newSelectedFreeDates);
-        setCompanyData((prevData) => ({
-            ...prevData,
-            equipemntsFreeMilliseconds: newSelectedFreeDates,
-        }));
-    };
-    
-
-    const handleReservationDateChange = (event) => {
-        const selectedDate = event.target.value;
-        setReservationDate(selectedDate);
-    };
-    
-    const handleReserveButtonClick = () => {
-        if (!reservationDate) {
-            alert("You have to pick a date!")
-            return;
-        }
-    
-        console.log(reservationDate);
-    
-        var reservation = {
-            id: '',
-            dateTimeInMS: reservationDate,
-            userId: 1,
-            equipments: equipment.map(eq => eq.id)
-        };
-    
-        CreateReservedDate(reservation);
-    
-        const updatedFreeDates = selectedFreeDates.filter(date => date !== reservationDate);
-        setSelectedFreeDates(updatedFreeDates);
-        console.log(updatedFreeDates);
-    
-        // Assuming you also want to update companyData state
-        companyData.equipemntsFreeMilliseconds = updatedFreeDates;
-
-        UpdateCompany(id, companyData)
-
-        alert("Reservation successfully made!");
     };
 
     return (
@@ -309,24 +235,7 @@ function CompanyComponent() {
 
                     {role === "user" ? (
                         <div>
-                            <FormControl fullWidth sx={{ width: '80vw', mt: 5 }}>
-                                <InputLabel id="demo-simple-select-label">Select Date</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    label="Select Date"
-                                    onChange={handleReservationDateChange}
-                                >
-                                    {companyData.equipemntsFreeMilliseconds.map((date) => (
-                                        <MenuItem key={date} value={date}>
-                                            {formatMillisecondsToDate(date)}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <Button variant="contained" onClick={handleReserveButtonClick} sx={{ width: '100%', mt: 2 }} color="secondary">
-                                    Reserve
-                                </Button>
-                            </FormControl>
+                            <p>Datumi</p>
                         </div>
                     ) : (
                         <div></div>
@@ -368,43 +277,7 @@ function CompanyComponent() {
                     ) : (<div></div>)}
 
                     {editMode ? (
-                        <FormControl fullWidth sx={{ mt: 5, width: '80vw', mb: 5 }}>
-                            <Stack spacing={1} direction="row">
-                                <InputLabel id="demo-multiple-checkbox-label">Free Dates</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    label="Free Dates"
-                                    multiple
-                                    value={selectedFreeDates}
-                                    onChange={handleFreeDatesChange}
-                                    sx={{ width: '100%' }}
-                                    renderValue={(selected) => (
-                                        <div>
-                                            {selected.map((date) => (
-                                                <Chip key={date} label={formatMillisecondsToDate(date)} />
-                                            ))}
-                                        </div>
-                                    )}
-                                    MenuProps={MenuProps}>
-                                    {companyData.equipemntsFreeMilliseconds.map((date) => (
-                                        <MenuItem key={date} value={date}>
-                                            <Checkbox checked={selectedFreeDates.includes(date)} />
-                                            <ListItemText primary={formatMillisecondsToDate(date)} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DemoContainer components={['DatePicker', 'DatePicker']}>
-                                        <DatePicker
-                                            label="Add new date"
-                                            onChange={handleDatePickerChange}
-                                            sx={{ width: '50%' }}
-                                        />
-                                    </DemoContainer>
-                                </LocalizationProvider>
-                            </Stack>
-                        </FormControl>
+                        <div><p>Admini i datumi</p></div>
                     ) : <div></div>}
                 </div>
                 {role === "companyAdmin" ? (
