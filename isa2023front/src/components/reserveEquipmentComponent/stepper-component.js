@@ -19,7 +19,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
-
+import { GetCompanyById } from '../../services/CompanyService';
+import { GetPredefinedDates } from '../../services/PredefinedDatesService';
 
 
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
@@ -30,10 +31,25 @@ export function StepperComponent() {
   useEffect(()=>{
     GetEquipmentByCompanyId(-1).then((res)=>{
       setEquipment(res.data);
-    });  
+    });
+    GetCompanyById(-1).then((res)=>{
+      setCompany(res.data);
+      GetPredefinedDates(res.data.predefinedDatesId).then((res)=>{
+        let predefDates=res.data.filter(item=>item.dateTimeInMs > new Date().getTime());
+        setMainDates(predefDates);
+        setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
+        console.log(res.data)
+      });
+
+    });
   },[]);
+  const [mainDates, setMainDates] = React.useState([]);
+
+
 
   const [equipment, setEquipment] = React.useState([]);
+  const [company,setCompany]=React.useState({});
+  const [dates,setDates]=React.useState([]);
 
   const [checked, setChecked] = useState([]);
 
@@ -43,19 +59,12 @@ export function StepperComponent() {
     }else{
       setChecked([...checked, equipmentId]);
     } 
-    
   }
 
   const items = ['Item 1', 'Item 2', 'Item 3'];
 
-
-  
-
   const handleNext = () => {
-    
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    
+    setActiveStep((prevActiveStep) => prevActiveStep + 1); 
   };
 
   const handleBack = () => {
@@ -72,9 +81,36 @@ export function StepperComponent() {
     bgcolor: 'background.paper',
     overflowY: 'auto',
     maxHeight: '30vh',
-    marginTop:'1.5vh'
+    marginTop:'1.5vh',
+    
     
   };
+  const listItemStyle = (date) => ({
+    background: selectedDate.id === date.id ? '#a0a0a0' : 'transparent',
+    justifyContent: 'center',
+  });
+  const handleItemClick = (date) => {
+    setSelectedDate(date);
+    console.log(date);
+  };
+  const [selectedDate, setSelectedDate] = useState({id:0});
+
+  const [pickedDate, setPickedDate] = useState(null);
+  const handleDatepicker=(date)=>{
+    
+    setPickedDate(date);
+    //console.log(date.toLocaleString());
+     // Replace this with your date string
+    const dateObject = new Date(date);
+    const dateInMs = dateObject.getTime();
+    console.log(dateInMs);
+    let copyArray = [...mainDates];
+    let variable=copyArray.filter(item => item.dateTimeInMs >= dateInMs);
+    setDates(variable);
+    console.log(mainDates);
+    console.log(variable);
+  }
+
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -136,14 +172,16 @@ export function StepperComponent() {
         <React.Fragment>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
-                    <DatePicker label="Select date"/>
+                    <DatePicker label="Select date" onChange={handleDatepicker} value={pickedDate}/>
                 </DemoContainer>
             </LocalizationProvider>
             
             <List sx={listStyle}>
-                {items.map((item, index) => (
-                    <ListItem key={index} button>
-                        {item}
+                {dates.map((date, index) => (
+                    <ListItem key={date.id} button
+                    onClick={() => handleItemClick(date)}
+                    style={listItemStyle(date)}>
+                        {new Date(date.dateTimeInMs).toLocaleString()} -- {new Date(date.dateTimeInMs+date.duration*60000).toLocaleString()}
                     </ListItem>
                     
                 ))}
