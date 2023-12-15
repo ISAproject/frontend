@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { GetUserByEmail } from '../../services/UserService';
 import InputIcon from '@mui/icons-material/Input';
 import { useNavigate } from 'react-router-dom';
+import authService from '../../services/auth.service.js';
 
 const LoginFormComponent = () => {
   const history = useNavigate();
@@ -43,8 +44,13 @@ const LoginFormComponent = () => {
       console.log('LoginForm submitted successfully:', formData);
 
     GetUserByEmail(formData.email).then((res)=>{
-        if (res.data.verified && res.data.password === formData.password) {
-            history(`/logged/${res.data.id}`);
+        if (res.data.verified) {
+            let credentials = { username: res.data.username, password: formData.password};
+            console.log(credentials);
+            authService.login(credentials).then(() =>{
+              console.log(localStorage.getItem('authUser')); 
+              history(`/logged`);
+            });
         }
         else{
             alert('Invalid account.');

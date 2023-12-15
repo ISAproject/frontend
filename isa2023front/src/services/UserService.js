@@ -22,3 +22,7 @@ export const GetCompanyAdministrators=()=>{
 export const GetLastUser=()=>{
     return axios.get("http://localhost:8090/api/v1/user/getlastuser");
 }
+
+export const GetUserByUsername=(username)=>{
+    return axios.get("http://localhost:8090/api/v1/user/username/"+username);
+}

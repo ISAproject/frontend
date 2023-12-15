@@ -35,7 +35,7 @@ function App() {
           <Route path="/register" element={<RegisterUserContainer/>}></Route>
           <Route path="/verify/:id" element={<VerifyUserContainer/>}></Route>
           <Route path="/login" element={<LoginUserContainer/>}></Route>
-          <Route path="/logged/:userId" element={<LoggedUserContainer/>}></Route>
+          <Route path="/logged" element={<LoggedUserContainer/>}></Route>
           <Route path="/equipments" element={<EquipmentsSearchContainer/>}></Route>
           <Route path="/companycreation" element={<CompanyCreationContainer/>}></Route>
         </Routes>

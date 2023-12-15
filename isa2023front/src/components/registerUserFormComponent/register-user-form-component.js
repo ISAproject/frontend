@@ -7,7 +7,8 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import './register-user-form-component.css';
-import { AddUser,GetUserByEmail } from '../../services/UserService';
+import { GetUserByEmail } from '../../services/UserService';
+import authService from '../../services/auth.service.js';
 
 const RegisterUserFormComponent = () => {
   const [formData, setFormData] = useState({
@@ -78,11 +79,12 @@ const RegisterUserFormComponent = () => {
         password: formData.password,
         role: formData.role, 
         company_info: formData.company_info,
-        occupation: formData.occupation
+        occupation: formData.occupation,
+        is_verified: false
       };
       GetUserByEmail(user.email).then((res)=>{
         if (!res.data) {
-          AddUser(user)
+          authService.register(user)
             .then((addedUser) => {
               console.log('Added user:', addedUser);
               setFormData({
@@ -160,9 +162,9 @@ const RegisterUserFormComponent = () => {
             onChange={handleChange}
           >
             <MenuItem value="">Select Occupation</MenuItem>
-            <MenuItem value="SYSTEM_ADMIN">System admin</MenuItem>
-            <MenuItem value="COMPANY_ADMIN">Company admin</MenuItem>
-            <MenuItem value="USER">User</MenuItem>
+            <MenuItem value="ROLL_SYSTEM_ADMIN">System admin</MenuItem>
+            <MenuItem value="ROLL_COMPANY_ADMIN">Company admin</MenuItem>
+            <MenuItem value="ROLL_USER">User</MenuItem>
           </Select>
         </FormControl>
         <br />
