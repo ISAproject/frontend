@@ -16,8 +16,8 @@ export const AddUser=(user)=>{
     return axios.post("http://localhost:8090/api/v1/user/add", user);
 }
 
-export const GetCompanyAdministrators=()=>{
-    return axios.get("http://localhost:8090/api/v1/user/companyAdministrators");
+export const GetCompanyAdministratorsByCompanyId=(companyId)=>{
+    return axios.get("http://localhost:8090/api/v1/user/companyAdministratorsByCompanyId/" + companyId);
 }
 export const GetLastUser=()=>{
     return axios.get("http://localhost:8090/api/v1/user/getlastuser");
