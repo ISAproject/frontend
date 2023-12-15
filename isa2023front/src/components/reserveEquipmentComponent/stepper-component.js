@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -18,62 +18,50 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
+
+
 
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
 export function StepperComponent() {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [skipped, setSkipped] = React.useState(new Set());
 
-  const equipment=[{
-    id:0,
-    name:'hihi',
-    type:0,
-    grade:3
-  },
-  {
-    id:1,
-    name:'hiaaaahi',
-    type:0,
-    grade:3.4
-  }]
+  useEffect(()=>{
+    GetEquipmentByCompanyId(-1).then((res)=>{
+      setEquipment(res.data);
+    });  
+  },[]);
+
+  const [equipment, setEquipment] = React.useState([]);
+
+  const [checked, setChecked] = useState([]);
+
+  const addEquipmentClick=(equipmentId) => (event) =>{
+    if(checked.includes(equipmentId)){
+      setChecked(checked.filter(item => item !== equipmentId));
+    }else{
+      setChecked([...checked, equipmentId]);
+    } 
+    
+  }
+
   const items = ['Item 1', 'Item 2', 'Item 3'];
 
-  const isStepOptional = (step) => {
-    return step === 1;
-  };
 
-  const isStepSkipped = (step) => {
-    return skipped.has(step);
-  };
+  
 
   const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
+    
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
+    
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      throw new Error("You can't skip a step that isn't optional.");
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
 
   const handleReset = () => {
     setActiveStep(0);
@@ -94,14 +82,8 @@ export function StepperComponent() {
         {steps.map((label, index) => {
           const stepProps = {};
           const labelProps = {};
-          if (isStepOptional(index)) {
-            labelProps.optional = (
-              <Typography variant="caption">Optional</Typography>
-            );
-          }
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
+          
+        
           return (
             <Step key={label} {...stepProps}>
               <StepLabel {...labelProps}>{label}</StepLabel>
@@ -122,7 +104,7 @@ export function StepperComponent() {
       }
       {(activeStep === 0) &&
         <React.Fragment>
-        <Box sx={{ width: '80vw', margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
+        <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
             <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
                 <Table>
                     <TableHead>
@@ -134,7 +116,11 @@ export function StepperComponent() {
                     </TableHead>
                     <TableBody>
                         {equipment.map((equipmentItem) => (
-                            <TableRow key={equipmentItem.id}>
+                            <TableRow key={equipmentItem.id} 
+                              onClick={addEquipmentClick(equipmentItem.id)}
+                              selected={checked.includes(equipmentItem.id)}
+                              hover
+                            >
                                 <TableCell>{equipmentItem.name}</TableCell>
                                 <TableCell>{equipmentItem.type}</TableCell>
                                 <TableCell>{equipmentItem.grade}</TableCell>
@@ -162,10 +148,7 @@ export function StepperComponent() {
                     
                 ))}
             </List>
-
-
         </React.Fragment>
-
     }
     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Button
@@ -177,11 +160,7 @@ export function StepperComponent() {
             Back
             </Button>
             <Box sx={{ flex: '1 1 auto' }} />
-            {isStepOptional(activeStep) && (
-            <Button color="inherit" onClick={handleSkip} sx={{ mr: 1 }}>
-                Skip
-            </Button>
-        )}
+            
 
         <Button onClick={handleNext}>
           {activeStep === steps.length - 1 ? 'Finish' : 'Next'}

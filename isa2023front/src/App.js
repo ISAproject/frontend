@@ -42,6 +42,7 @@ function App() {
           <Route path="/companycreation" element={<CompanyCreationContainer/>}></Route>
           <Route path="/company/reserve-equipment/:id" element={<ReserveEquipmentComponent/>}></Route>
           <Route path="/stepper" element={<StepperComponent/>}></Route>
+          
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
