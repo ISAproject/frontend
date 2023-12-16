@@ -25,7 +25,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
 import { Box } from '@mui/material';
-import { CreateReservedDate } from '../../services/ReservedDateService';
+import { CreateReservedDate, GetAllReservedDates } from '../../services/ReservedDateService';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -36,8 +36,15 @@ import dayjs from 'dayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import Grid from '@mui/material/Grid';
 import * as styles from './company-component.css';
-import { GetAllPredefinedDates, CreatePredefinedDate, DeletePredefinedDate } from '../../services/PredefinedDateService'
-
+import { GetAllPredefinedDates, CreatePredefinedDate, DeletePredefinedDate } from '../../services/PredefinedDateService';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EquipmentSearchComponent from '../equipmentSearchComponent/equipmentSearchComponent';
+import AddIcon from '@mui/icons-material/Add';
+import Modal from '@mui/material/Modal';
+import { CreateEquipment, UpdateEquipment, DeleteEquipment } from '../../services/EquipmentService';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -76,6 +83,27 @@ function CompanyComponent() {
     const [duration, setDuration] = useState('');
     const [time, setTime] = useState();
     const [datesToDelete, setDatesToDelete] = useState([])
+    const [newEquipment, setNewEquipment] = useState({
+        name: '',
+        type: 0,
+        grade: '',
+        companyId: id,
+        description: '',
+        quantity: 0
+    })
+
+    const [editEquipment, setEditEquipment] = useState({
+        id: '',
+        name: '',
+        type: 0,
+        grade: '',
+        companyId: id,
+        description: '',
+        quantity: 0
+    })
+
+    const [equipmentIdEdit, setEquipmentIdEdit] = useState(0)
+    const [existingReservedDates, setExistingReservedDates] = useState([])
 
 
     useEffect(() => {
@@ -85,10 +113,14 @@ function CompanyComponent() {
                 const equipmentRes = await GetEquipmentByCompanyId(id);
                 const companyAdminsRes = await GetCompanyAdministratorsByCompanyId(id);
                 const predefinedDatesRes = await GetAllPredefinedDates();
+                const existingReservedDatesRes = await GetAllReservedDates();
 
                 setCompanyData(companyRes.data);
                 setEquipment(equipmentRes.data);
                 setCompanyAdministrators(companyAdminsRes.data);
+                setExistingReservedDates(existingReservedDatesRes.data);
+
+                console.log(existingReservedDates)
 
                 const filteredData = predefinedDatesRes.data.filter(d => companyRes.data.administratorId.filter(id => id == d.companyAdminId).length > 0)
 
@@ -112,13 +144,13 @@ function CompanyComponent() {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-    
+
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
-    
+
 
     const formatMillisecondsToDate = (milliseconds) => {
         const date = new Date(milliseconds);
@@ -144,10 +176,10 @@ function CompanyComponent() {
 
 
             await UpdateCompany(companyData.id, companyData);
-            setEditMode(false); 
+            setEditMode(false);
 
             for (const predefDateId of datesToDelete) {
-                if(predefinedDatesFromBase.find(date => date.id === predefDateId))
+                if (predefinedDatesFromBase.find(date => date.id === predefDateId))
                     await DeletePredefinedDate(predefDateId, id);
             }
 
@@ -170,6 +202,13 @@ function CompanyComponent() {
             [field]: value,
         }));
     };
+
+    const handleEquipmentInputChange = (field, value) => {
+        setNewEquipment((prevData) => ({
+            ...prevData,
+            [field]: value,
+        }))
+    }
 
     const handleAdminChange = (event) => {
         const selectedAdmin = event.target.value;
@@ -198,8 +237,8 @@ function CompanyComponent() {
             alert("You can't pick date before todays");
             return;
         }
-        
-        if(time == null || time.split(':').length == 1){
+
+        if (time == null || time.split(':').length == 1) {
             alert("You have to enter staring time in format 08:00!");
             return;
         }
@@ -221,6 +260,59 @@ function CompanyComponent() {
         else {
             alert("Company admin is already asigned on this date")
         }
+    }
+
+    const handleAddEquipmentClick = () => {
+        setEquipment([...equipment, newEquipment])
+        CreateEquipment(newEquipment);
+
+        setNewEquipment({
+            name: '',
+            type: 0,
+            grade: '',
+            companyId: id,
+            description: '',
+            quantity: 0
+        })
+    }
+
+    const handleEditEquipmentClick = (equipmentEdit) => {
+        setEquipmentIdEdit(equipmentEdit.id)
+        setEditEquipment(equipmentEdit)
+    }
+
+    const handleCancelEquipmentClick = () => {
+        setEquipmentIdEdit(0)
+    }
+
+    const handleEditEquipmentInputChange = (field, value) => {
+        setEditEquipment((prevData) => {
+            const updatedData = {
+                ...prevData,
+                [field]: value,
+            };
+            return updatedData;
+        });
+    }
+
+    const handleUpdateEquipmentClick = () => {
+        const updatedEquipment = equipment.map(e => {
+            if (e.id === editEquipment.id) {
+                return editEquipment;
+            }
+            return e;
+        });
+
+        setEquipment(updatedEquipment);
+        setEquipmentIdEdit(0);
+        UpdateEquipment(editEquipment.id, editEquipment);
+    }
+
+    const handleRemoveEquipmentClick = (id) => {
+        const filteredEquipment = equipment.filter(e => e.id != id);
+
+        setEquipment(filteredEquipment);
+        DeleteEquipment(id);
     }
 
     return (
@@ -298,6 +390,7 @@ function CompanyComponent() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        {/* <EquipmentSearchComponent/> */}
                         <Box sx={{ width: '80vw', margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
                             <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
                                 <Table>
@@ -306,16 +399,130 @@ function CompanyComponent() {
                                             <TableCell>Equipment name</TableCell>
                                             <TableCell>Type</TableCell>
                                             <TableCell>Grade</TableCell>
+                                            {editMode ? (
+                                                <>
+                                                    <TableCell>Description</TableCell>
+                                                    <TableCell>Quantity</TableCell>
+                                                    <TableCell></TableCell>
+                                                    <TableCell></TableCell>
+                                                </>
+                                            ) : (<></>)}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {equipment.map((equipmentItem) => (
                                             <TableRow key={equipmentItem.id}>
-                                                <TableCell>{equipmentItem.name}</TableCell>
-                                                <TableCell>{equipmentItem.type}</TableCell>
-                                                <TableCell>{equipmentItem.grade}</TableCell>
+                                                {equipmentItem.id === equipmentIdEdit ? (
+                                                    <>
+                                                        <TableCell>
+                                                            <TextField
+                                                                value={editEquipment.name}
+                                                                onChange={(e) => handleEditEquipmentInputChange('name', e.target.value)}
+                                                            /></TableCell>
+                                                        <TableCell>
+                                                            <FormControl fullWidth>
+                                                                <InputLabel id="demo-multiple-checkbox-label">Equipment type</InputLabel>
+                                                                <Select
+                                                                    labelId="demo-simple-select-label"
+                                                                    id="demo-simple-select"
+                                                                    value={editEquipment.type}
+                                                                    label="Equipment type"
+                                                                    onChange={(e) => handleEditEquipmentInputChange('type', e.target.value)}
+                                                                >
+                                                                    <MenuItem value={0}>DIAGNOSTIC_EQUIPMENT</MenuItem>
+                                                                    <MenuItem value={1}>DURABLE_MEDICAL_EQUIPMENT</MenuItem>
+                                                                    <MenuItem value={2}>TREATMENT_EQUIPMENT</MenuItem>
+                                                                    <MenuItem value={3}>LIFE_SUPPORT_EQUIPMENT</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
+                                                        </TableCell>
+                                                        <TableCell><TextField
+                                                            value={editEquipment.grade}
+                                                            onChange={(e) => handleEditEquipmentInputChange('grade', e.target.value)}
+                                                        /></TableCell>
+                                                        {editMode ? (
+                                                            <>
+                                                                <TableCell><TextField
+                                                                    value={editEquipment.description}
+                                                                    onChange={(e) => handleEditEquipmentInputChange('description', e.target.value)}
+                                                                /></TableCell>
+                                                                <TableCell><TextField
+                                                                    value={editEquipment.quantity}
+                                                                    onChange={(e) => handleEditEquipmentInputChange('quantity', e.target.value)}
+                                                                /></TableCell>
+                                                                <TableCell><CancelIcon className='button-remove-equipment' onClick={handleCancelEquipmentClick} /></TableCell>
+                                                                <TableCell><CheckIcon className='button-remove-equipment' onClick={handleUpdateEquipmentClick} /></TableCell>
+                                                            </>
+                                                        ) : (<></>)}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <TableCell>{equipmentItem.name}</TableCell>
+                                                        <TableCell>{equipmentItem.type}</TableCell>
+                                                        <TableCell>{equipmentItem.grade}</TableCell>
+                                                        {editMode ? (
+                                                            <>
+                                                                <TableCell>{equipmentItem.description}</TableCell>
+                                                                <TableCell>{equipmentItem.quantity}</TableCell>
+                                                                <TableCell><EditIcon className='button-remove-equipment' onClick={() => handleEditEquipmentClick(equipmentItem)} /></TableCell>
+                                                                {existingReservedDates.findIndex(date => date.equipments.includes(equipmentItem.id)) === -1 ? (
+                                                                    <TableCell><DeleteIcon className='button-remove-equipment' onClick={() => handleRemoveEquipmentClick(equipmentItem.id)} 
+                                                                    /></TableCell>
+                                                                ): (<TableCell></TableCell>)}
+                                                                
+                                                            </>
+                                                        ) : (<></>)}
+                                                    </>
+                                                )}
+
+
                                             </TableRow>
                                         ))}
+                                        {editMode ? (
+                                            <>
+                                                <TableRow>
+                                                    <TableCell><TextField
+                                                        value={newEquipment.name}
+                                                        onChange={(e) => handleEquipmentInputChange('name', e.target.value)}
+                                                    />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <FormControl fullWidth>
+                                                            <InputLabel id="demo-multiple-checkbox-label">Equipment type</InputLabel>
+                                                            <Select
+                                                                labelId="demo-simple-select-label"
+                                                                id="demo-simple-select"
+                                                                value={newEquipment.type}
+                                                                label="Equipment type"
+                                                                onChange={(e) => handleEquipmentInputChange('type', e.target.value)}
+                                                            >
+                                                                <MenuItem value={0}>DIAGNOSTIC_EQUIPMENT</MenuItem>
+                                                                <MenuItem value={1}>DURABLE_MEDICAL_EQUIPMENT</MenuItem>
+                                                                <MenuItem value={2}>TREATMENT_EQUIPMENT</MenuItem>
+                                                                <MenuItem value={3}>LIFE_SUPPORT_EQUIPMENT</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                    </TableCell>
+                                                    <TableCell><TextField
+                                                        value={newEquipment.grade}
+                                                        onChange={(e) => handleEquipmentInputChange('grade', e.target.value)}
+                                                    /></TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            value={newEquipment.description}
+                                                            onChange={(e) => handleEquipmentInputChange('description', e.target.value)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            value={newEquipment.quantity}
+                                                            onChange={(e) => handleEquipmentInputChange('quantity', e.target.value)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell><AddIcon className='button-remove-equipment' onClick={handleAddEquipmentClick} /></TableCell>
+                                                </TableRow>
+                                            </>
+                                        ) : (<></>)}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -368,13 +575,13 @@ function CompanyComponent() {
                                         </Grid>
                                         <Grid item xs={4} className='d-flex flex-column'>
                                             <div className="calendar-wrapper d-flex justify-content-center p-2 mt-2">
-                                            <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                                <DemoContainer components={['DateCalendar', 'DateCalendar']}>
-                                                    <DemoItem label="Pick a date">
-                                                        <DateCalendar value={date} onChange={(newDate) => setDate(newDate)} />
-                                                    </DemoItem>
-                                                </DemoContainer>
-                                            </LocalizationProvider>
+                                                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                                    <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+                                                        <DemoItem label="Pick a date">
+                                                            <DateCalendar value={date} onChange={(newDate) => setDate(newDate)} />
+                                                        </DemoItem>
+                                                    </DemoContainer>
+                                                </LocalizationProvider>
                                             </div>
                                             <Box
                                                 component="form"
@@ -397,7 +604,7 @@ function CompanyComponent() {
                                                     value={duration}
                                                     onChange={handleDurationChange}
                                                 />
-                                                
+
                                             </Box>
                                         </Grid>
                                         <Button variant="contained" className='button-add mb-3' onClick={handleAddClick}>
