@@ -3,8 +3,10 @@ import UserUpdateComponent from "../../components/UserComponent/UserUpdateCompon
 import { GetUserById } from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
 import { Box } from "@mui/material";
-import { useParams } from 'react-router-dom';
+import { GetUserByUsername } from "../../services/UserService";
+
 function UserViewContainer() {  
+  const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
     let user={
         username:"",
         first_name:"",
@@ -18,11 +20,14 @@ function UserViewContainer() {
         verified:""
     }
     const [userData,setUserData]=useState(user);
-    const userId = useParams().id;
+    const [userId,setUserId] = useState(0);
 
     useEffect(()=>{
-      GetUserById(userId).then((res)=>setUserData(res.data));
-    },[userId]);
+      GetUserByUsername(authUser.username).then((res)=>{
+        setUserData(res.data);
+        setUserId(res.data.id);
+      });
+    },[authUser.username]);
 
     const handleUserInfo=()=>{
       console.log("works")
@@ -31,8 +36,17 @@ function UserViewContainer() {
 
     return (
       <Box width={300}>
+        {authUser
+          ?
+        <>
         <UserInfoComponent user={userData}/>
         <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
+        </>
+          :
+          <div>
+            <h2>Page not found :/</h2>
+          </div>
+        }
       </Box>
     );
   }

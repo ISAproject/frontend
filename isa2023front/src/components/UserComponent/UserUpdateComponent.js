@@ -8,12 +8,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { GetUserById, UpdateUser } from '../../services/UserService';
+import Box from '@mui/material/Box';
+
 
 function UserUpdateComponent({userInfoFunction,userId}) {
+  
   const [open, setOpen] = React.useState(false);
 
   let user={
+    id:0,
     username:"",
+    email: "",
+    password: "",
     first_name:"",
     last_name:"",
     state:"",
@@ -24,6 +30,8 @@ function UserUpdateComponent({userInfoFunction,userId}) {
     role:"",
     verified:false
 
+  
+
   }
   const [userData,setUserData]=useState(user);
 
@@ -31,11 +39,19 @@ function UserUpdateComponent({userInfoFunction,userId}) {
     setUserData({ ...userData, [field]: event.target.value });
     
   };
-  useEffect(()=>{
-    
-    GetUserById(userId).then((res)=>setUserData(res.data));
-
-  },[open,userId]);
+  useEffect(() => {
+    GetUserById(userId).then((res) => {
+      // Filter out unwanted fields
+      const filteredUserData = Object.keys(user).reduce((filtered, key) => {
+        if (res.data.hasOwnProperty(key)) {
+          filtered[key] = res.data[key];
+        }
+        return filtered;
+      }, {});
+  
+      setUserData(filteredUserData);
+    });
+  }, [open, userId]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -55,6 +71,7 @@ function UserUpdateComponent({userInfoFunction,userId}) {
   };
   const handleSubmit = () => {
     if(validateUserData()){
+      console.log(userData)
       UpdateUser(userId,userData).then(()=>userInfoFunction());
       setOpen(false);
     }
@@ -75,16 +92,7 @@ function UserUpdateComponent({userInfoFunction,userId}) {
           <DialogContentText>
             Change user info:
           </DialogContentText>
-            <TextField
-              autoFocus
-              label="Username"
-              defaultValue={userData.username}
-              fullWidth
-              variant="filled"
-              onChange={handleChange('username')}
-              error={!userData.username}
-              margin='normal'
-            />
+            
             <TextField
               autoFocus
               label="First name"
@@ -162,6 +170,7 @@ function UserUpdateComponent({userInfoFunction,userId}) {
         </DialogActions>
       </Dialog>
     </React.Fragment>
+    
   );
 }
 

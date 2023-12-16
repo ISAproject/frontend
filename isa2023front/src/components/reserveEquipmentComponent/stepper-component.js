@@ -23,37 +23,36 @@ import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
 import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
 import { ToastContainer, toast } from 'react-toastify';
-  import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { GetUserByUsername } from '../../services/UserService';
 
 
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
 export function StepperComponent({handleClose}) {
   const [activeStep, setActiveStep] = React.useState(0);
-
+  const [userId,setUserId]=useState(0);
+  const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   useEffect(()=>{
+    console.log('hi');
+    GetUserByUsername(authUser.username).then((res)=>setUserId(res.data.id));
+
     GetEquipmentByCompanyId(-1).then((res)=>{
       setEquipment(res.data);
     });
     GetCompanyById(-1).then((res)=>{
-      setCompany(res.data);
+      //setCompany(res.data);
       GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
-        // result.data.forEach(element => {
-        //   console.log(new Date(element.dateTimeInMs).toDateString());
-        // });
         const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime());
         setMainDates(predefDates);
         setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
-
-        
-        
       });
 
     });
-  },[]);
+  },[authUser.username,userId]);
   const [mainDates, setMainDates] = React.useState([]);
   const [equipment, setEquipment] = React.useState([]);
-  const [company,setCompany]=React.useState({});
+  //const [company,setCompany]=React.useState({});
   const [dates,setDates]=React.useState([]);
 
   const [checked, setChecked] = useState([]);
@@ -67,7 +66,7 @@ export function StepperComponent({handleClose}) {
   }
 
   const validateDate=(reservedDate)=>{
-    if(reservedDate.duration<=0 || reservedDate.equipments.length==0 || reservedDate.dateTimeInMS>=new Date().getTime()){
+    if(reservedDate.duration<=0 || reservedDate.equipments.length===0 || reservedDate.dateTimeInMS>=new Date().getTime()){
       return true;
     }
     return false;
@@ -78,13 +77,13 @@ export function StepperComponent({handleClose}) {
       toast.error("Please select equipment you want to use!");
       return;
     }
-    console.log(Object.keys(selectedDate).length === 0);
-    if(activeStep==1 && Object.keys(selectedDate).length === 0){
+    //console.log(Object.keys(selectedDate).length === 0);
+    if(activeStep===1 && Object.keys(selectedDate).length === 0){
       toast.error("Please select a date!");
       return;
     }
-
-    if(activeStep==steps.length - 1){
+    
+    if(activeStep===steps.length - 1){
       
       let reservedDate={
         duration: selectedDate.duration,
@@ -139,8 +138,9 @@ export function StepperComponent({handleClose}) {
   const [selectedDate, setSelectedDate] = useState({});
 
   const [pickedDate, setPickedDate] = useState(null);
+
   const handleDatepicker=(date)=>{
-    
+    setSelectedDate({});
     setPickedDate(date);
     const dateObject = new Date(date);
     const dateInMs = dateObject.getTime();

@@ -29,7 +29,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/user/page/:id" element={<UserViewContainer/>}></Route>
+          <Route path="/user/page" element={<UserViewContainer/>}></Route>
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
           <Route path="/company/:id/:role" element={<CompanyComponent/>}></Route>
           <Route path="/equipment/:id" element={<EquipmentComponent/>}></Route>
