@@ -22,10 +22,13 @@ import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
 import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
 import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
+
 
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
-export function StepperComponent() {
+export function StepperComponent({handleClose}) {
   const [activeStep, setActiveStep] = React.useState(0);
 
   useEffect(()=>{
@@ -71,7 +74,15 @@ export function StepperComponent() {
   }
 
   const handleNext = () => {
-    
+    if(checked.length===0){
+      toast.error("Please select equipment you want to use!");
+      return;
+    }
+    console.log(Object.keys(selectedDate).length === 0);
+    if(activeStep==1 && Object.keys(selectedDate).length === 0){
+      toast.error("Please select a date!");
+      return;
+    }
 
     if(activeStep==steps.length - 1){
       
@@ -84,8 +95,11 @@ export function StepperComponent() {
       }
       if(validateDate(reservedDate)){
         CreateReservedDateWithMail(reservedDate,'jovan.katanic204@gmail.com');
+        
+        toast.success("Your reservation has been added!");
+        handleClose();
       }else{
-        alert("error");
+        toast.error("Please select a date!");
       }
       
     }else{
@@ -95,6 +109,7 @@ export function StepperComponent() {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    
   };
 
 
@@ -129,12 +144,11 @@ export function StepperComponent() {
     setPickedDate(date);
     const dateObject = new Date(date);
     const dateInMs = dateObject.getTime();
-    console.log(dateInMs);
+    
     let copyArray = [...mainDates];
     let variable=copyArray.filter(item => item.dateTimeInMs >= dateInMs);
     setDates(variable);
-    console.log(mainDates);
-    console.log(variable);
+    
   }
 
   const formatDate=(milliseconds,duration)=>{
@@ -150,7 +164,7 @@ export function StepperComponent() {
     const padZero = (value) => (value < 10 ? `0${value}` : value);
     const timePart = `${padZero(hours)}:${padZero(minutes)}`;
     const endTimePart=`${padZero(endHours)}:${padZero(endMinutes)}`;
-    //date.getMonth()+'/'+date.getDay()+'/'+date.getFullYear()
+    
     const month=date.getMonth();
     const day=date.getDay();
     const year=date.getFullYear();
@@ -160,8 +174,9 @@ export function StepperComponent() {
     return datePart+ ' ' + timePart + ' - ' +endTimePart ;
   }
 
-
+  
   return (
+
     <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
@@ -251,13 +266,27 @@ export function StepperComponent() {
             >
             Back
             </Button>
+            
             <Box sx={{ flex: '1 1 auto' }} />
+            
             
 
         <Button onClick={handleNext}>
           {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         </Button>
-      </Box>    
+        
+      </Box>   
+      <ToastContainer 
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable={false}
+        pauseOnHover={false}
+        theme="colored"/>
     </Box>
   );
 }
