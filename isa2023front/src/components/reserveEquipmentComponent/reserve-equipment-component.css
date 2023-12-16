@@ -1,0 +1,9 @@
+.hover-effect:hover {
+    background-color: red; /* Change this to your desired hover background color */
+    cursor: pointer;
+    /* Add any other styles you want to apply on hover */
+}
+
+.nesto{
+    background-color: red;
+}
