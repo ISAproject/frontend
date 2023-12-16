@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GetCompanyById, UpdateCompany, GetSearchedCompanies, GetAllCompanies } from "../../services/CompanyService";
 import { useParams } from 'react-router-dom';
-import { GetCompanyAdministrators } from '../../services/UserService';
+import { GetCompanyAdministratorsByCompanyId } from '../../services/UserService';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -32,6 +32,12 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import Grid from '@mui/material/Grid';
+import * as styles from './company-component.css';
+import { GetAllPredefinedDates, CreatePredefinedDate, DeletePredefinedDate } from '../../services/PredefinedDateService'
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,18 +60,22 @@ function CompanyComponent() {
         address: "",
         description: "",
         avgGrade: 0,
-        equipemntsFree: [],
-        administratorsId: []
+        predefinedDatesId: [],
+        administratorId: []
     });
 
-    const [companies, setCompanies] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [role, setRole] = useState("companyAdmin");
     const [companyAdministrators, setCompanyAdministrators] = useState([]);
-    const [selectedAdmins, setSelectedAdmins] = useState([]);
-    const [selectedFreeDates, setSelectedFreeDates] = useState([]);
+    const [selectedAdmin, setSelectedAdmin] = useState([]);
     const [equipment, setEquipment] = useState([]);
-    const [reservationDate, setReservationDate] = useState(null);
+    const [date, setDate] = useState(null);
+
+    const [predefinedDates, setPredefinedDates] = useState([])
+    const [predefinedDatesFromBase, setPredefinedDatesFromBase] = useState([])
+    const [duration, setDuration] = useState('');
+    const [time, setTime] = useState();
+    const [datesToDelete, setDatesToDelete] = useState([])
 
 
     useEffect(() => {
@@ -73,33 +83,23 @@ function CompanyComponent() {
             try {
                 const companyRes = await GetCompanyById(id);
                 const equipmentRes = await GetEquipmentByCompanyId(id);
+                const companyAdminsRes = await GetCompanyAdministratorsByCompanyId(id);
+                const predefinedDatesRes = await GetAllPredefinedDates();
 
                 setCompanyData(companyRes.data);
-                setSelectedAdmins(companyRes.data.administratorsId);
-                setSelectedFreeDates(companyRes.data.equipemntsFreeMilliseconds);
                 setEquipment(equipmentRes.data);
-                if(roleFromURL == 2)
+                setCompanyAdministrators(companyAdminsRes.data);
+
+                const filteredData = predefinedDatesRes.data.filter(d => companyRes.data.administratorId.filter(id => id == d.companyAdminId).length > 0)
+
+                setPredefinedDates(filteredData);
+                setPredefinedDatesFromBase(filteredData);
+
+                if (roleFromURL == 2)
                     setRole("companyAdmin");
                 else
                     setRole("user");
 
-                const adminRes = await GetCompanyAdministrators();
-                const companiesRes = await GetAllCompanies();
-
-
-                const admins = adminRes.data;
-
-                companiesRes.data.forEach((company) => {
-                    company.administratorsId.forEach((admin) => {
-                        if (company.id !== companyData.id) {
-                            const indx = admins.indexOf(admins.find((a) => a.id === admin));
-                            admins.splice(indx, 1);
-                        }
-                    });
-                });
-                setCompanyAdministrators(admins);
-
-                console.log(equipment);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -112,9 +112,13 @@ function CompanyComponent() {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-
-        return `${day}/${month}/${year}`;
+    
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
     }
+    
 
     const formatMillisecondsToDate = (milliseconds) => {
         const date = new Date(milliseconds);
@@ -123,25 +127,41 @@ function CompanyComponent() {
 
     const handleEditClick = () => {
         setEditMode(true);
-        console.log(equipment);
     };
 
-    const handleSaveClick = () => {
-        if(companyData.avgGrade < 1 || companyData.avgGrade > 5){
-            alert("Average grade has to be between 1 and 5!");
-            return;
+    const handleSaveClick = async () => {
+        try {
+            if (companyData.avgGrade < 1 || companyData.avgGrade > 5) {
+                alert("Average grade has to be between 1 and 5!");
+                return;
+            }
+
+            for (const predefinedDate of predefinedDates) {
+                if (!predefinedDatesFromBase.find(date => date.id === predefinedDate.id)) {
+                    await CreatePredefinedDate(predefinedDate, id);
+                }
+            }
+
+
+            await UpdateCompany(companyData.id, companyData);
+            setEditMode(false); 
+
+            for (const predefDateId of datesToDelete) {
+                if(predefinedDatesFromBase.find(date => date.id === predefDateId))
+                    await DeletePredefinedDate(predefDateId, id);
+            }
+
+            window.location.reload();
+
+        } catch (error) {
+            console.error('Error updating company data or processing predefined dates:', error);
         }
-        UpdateCompany(companyData.id, companyData)
-            .then(() => {
-                console.log('Company data updated successfully');
-                console.log(companyData);
-                setEditMode(false);
-            })
-            .catch((error) => console.error('Error updating company data:', error));
     };
 
     const handleCancelClick = () => {
         setEditMode(false);
+
+        window.location.reload();
     };
 
     const handleInputChange = (field, value) => {
@@ -152,283 +172,265 @@ function CompanyComponent() {
     };
 
     const handleAdminChange = (event) => {
-        const selectedAdmins = event.target.value;
-        setSelectedAdmins(selectedAdmins);
-        companyData.administratorsId = selectedAdmins;
+        const selectedAdmin = event.target.value;
+        setSelectedAdmin(selectedAdmin);
+        companyData.administratorsId = selectedAdmin;
     };
 
-    const handleFreeDatesChange = (event) => {
-        const selectedFreeDates = event.target.value;
-        setSelectedFreeDates(selectedFreeDates);
-        companyData.equipemntsFreeMilliseconds = selectedFreeDates;
+    const handleTimeChange = (event) => {
+        setTime(event.target.value);
+    }
+    const handleDurationChange = (event) => {
+        setDuration(event.target.value);
     };
 
-    const handleDatePickerChange = (date) => {
-        var convertedDate = new Date(date);
-        const newSelectedFreeDates = [...selectedFreeDates, convertedDate.getTime()];
-    
-        setSelectedFreeDates(newSelectedFreeDates);
-        setCompanyData((prevData) => ({
-            ...prevData,
-            equipemntsFreeMilliseconds: newSelectedFreeDates,
-        }));
-    };
-    
+    const handleDelete = (id) => {
+        const updatedPredefinedDates = predefinedDates.filter(
+            (date) => date.id !== id
+        );
+        setPredefinedDates(updatedPredefinedDates);
 
-    const handleReservationDateChange = (event) => {
-        const selectedDate = event.target.value;
-        setReservationDate(selectedDate);
-    };
-    
-    const handleReserveButtonClick = () => {
-        if (!reservationDate) {
-            alert("You have to pick a date!")
+        setDatesToDelete([...datesToDelete, id]);
+    }
+
+    const handleAddClick = () => {
+        if (new Date(date).getTime() < new Date().getTime()) {
+            alert("You can't pick date before todays");
             return;
         }
-    
-        console.log(reservationDate);
-    
-        var reservation = {
-            id: '',
-            dateTimeInMS: reservationDate,
-            userId: 1,
-            equipments: equipment.map(eq => eq.id)
-        };
-    
-        CreateReservedDate(reservation);
-    
-        const updatedFreeDates = selectedFreeDates.filter(date => date !== reservationDate);
-        setSelectedFreeDates(updatedFreeDates);
-        console.log(updatedFreeDates);
-    
-        // Assuming you also want to update companyData state
-        companyData.equipemntsFreeMilliseconds = updatedFreeDates;
+        
+        if(time == null || time.split(':').length == 1){
+            alert("You have to enter staring time in format 08:00!");
+            return;
+        }
 
-        UpdateCompany(id, companyData)
+        const newPredefinedDate = {
+            id: Math.random(),
+            companyAdminId: selectedAdmin,
+            dateTimeInMs: new Date(date).getTime() + time.split(':')[0] * 3600000,
+            duration: duration
+        }
 
-        alert("Reservation successfully made!");
-    };
+        if (newPredefinedDate.companyAdminId == null || newPredefinedDate.dateTimeInMs == null || newPredefinedDate.duration == '' || newPredefinedDate.duration == null) {
+            alert("You have to pick company admin, date and duration to create predefined dates")
+            return;
+        }
+        if (predefinedDates.filter(d => d.companyAdminId == newPredefinedDate.companyAdminId
+            && d.dateTimeInMs == newPredefinedDate.dateTimeInMs).length == 0)
+            setPredefinedDates([...predefinedDates, newPredefinedDate]);
+        else {
+            alert("Company admin is already asigned on this date")
+        }
+    }
 
     return (
         <>
-        <AppBar position="static" color='secondary'>
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="accent"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
-          <span style={{ fontWeight: 'bold' }}>MediConnect</span>
-          </Typography>
-          <Button color="accent" component={Link} to="/home">Home</Button>
-          <Button color="accent">Login</Button>
-          <Button color="accent">Register</Button>
-        </Toolbar>
-      </AppBar>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10vh' }}>
-            <Stack spacing={2} direction="column">
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '90vw' }}>
-                    <TableContainer component={Paper} sx={{ maxWidth: '80vw', margin: 'auto' }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Address</TableCell>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>Average Grade</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                <TableRow>
-                                    {editMode ? (
-                                        <>
-                                            <TableCell>
-                                                <TextField
-                                                    value={companyData.name}
-                                                    onChange={(e) => handleInputChange('name', e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell>
-                                                <TextField
-                                                    value={companyData.address}
-                                                    onChange={(e) => handleInputChange('address', e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell>
-                                                <TextField
-                                                    value={companyData.description}
-                                                    onChange={(e) => handleInputChange('description', e.target.value)}
-                                                />
-                                            </TableCell>
-                                            <TableCell>
-                                                <TextField
-                                                    value={companyData.avgGrade}
-                                                    onChange={(e) => handleInputChange('avgGrade', e.target.value)}
-                                                />
-                                            </TableCell>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <TableCell>{companyData.name}</TableCell>
-                                            <TableCell>{companyData.address}</TableCell>
-                                            <TableCell>{companyData.description}</TableCell>
-                                            <TableCell>{companyData.avgGrade}</TableCell>
-                                        </>
-                                    )}
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Box sx={{ width: '80vw', margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
-                        <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
+            <AppBar position="static" color='secondary'>
+                <Toolbar>
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="accent"
+                        aria-label="menu"
+                        sx={{ mr: 2 }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
+                        <span style={{ fontWeight: 'bold' }}>MediConnect</span>
+                    </Typography>
+                    <Button color="accent" component={Link} to="/home">Home</Button>
+                    <Button color="accent">Login</Button>
+                    <Button color="accent">Register</Button>
+                </Toolbar>
+            </AppBar>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10vh' }}>
+                <Stack spacing={2} direction="column">
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '90vw' }}>
+                        <TableContainer component={Paper} sx={{ maxWidth: '80vw', margin: 'auto' }}>
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Equipment name</TableCell>
-                                        <TableCell>Type</TableCell>
-                                        <TableCell>Grade</TableCell>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Address</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell>Average Grade</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {equipment.map((equipmentItem) => (
-                                        <TableRow key={equipmentItem.id}>
-                                            <TableCell>{equipmentItem.name}</TableCell>
-                                            <TableCell>{equipmentItem.type}</TableCell>
-                                            <TableCell>{equipmentItem.grade}</TableCell>
-                                        </TableRow>
-                                    ))}
+                                    <TableRow>
+                                        {editMode ? (
+                                            <>
+                                                <TableCell>
+                                                    <TextField
+                                                        value={companyData.name}
+                                                        onChange={(e) => handleInputChange('name', e.target.value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        value={companyData.address}
+                                                        onChange={(e) => handleInputChange('address', e.target.value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        value={companyData.description}
+                                                        onChange={(e) => handleInputChange('description', e.target.value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        value={companyData.avgGrade}
+                                                        onChange={(e) => handleInputChange('avgGrade', e.target.value)}
+                                                    />
+                                                </TableCell>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <TableCell>{companyData.name}</TableCell>
+                                                <TableCell>{companyData.address}</TableCell>
+                                                <TableCell>{companyData.description}</TableCell>
+                                                <TableCell>{companyData.avgGrade}</TableCell>
+                                            </>
+                                        )}
+                                    </TableRow>
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                    </Box>
+                        <Box sx={{ width: '80vw', margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
+                            <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Equipment name</TableCell>
+                                            <TableCell>Type</TableCell>
+                                            <TableCell>Grade</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {equipment.map((equipmentItem) => (
+                                            <TableRow key={equipmentItem.id}>
+                                                <TableCell>{equipmentItem.name}</TableCell>
+                                                <TableCell>{equipmentItem.type}</TableCell>
+                                                <TableCell>{equipmentItem.grade}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
 
-                    {role === "user" ? (
-                        <div>
-                            <FormControl fullWidth sx={{ width: '80vw', mt: 5 }}>
-                                <InputLabel id="demo-simple-select-label">Select Date</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    label="Select Date"
-                                    onChange={handleReservationDateChange}
-                                >
-                                    {companyData.equipemntsFreeMilliseconds.map((date) => (
-                                        <MenuItem key={date} value={date}>
-                                            {formatMillisecondsToDate(date)}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <Button variant="contained" onClick={handleReserveButtonClick} sx={{ width: '100%', mt: 2 }} color="secondary">
-                                    Reserve
+                        {role === "user" ? (
+                            <div>
+                                <p>Datumi</p>
+                            </div>
+                        ) : (
+                            <div></div>
+                        )}
+
+                        {editMode ? (
+                            <>
+                                <div style={{ width: '80vw' }}>
+                                    <Grid container spacing={2} >
+                                        <Grid item xs={8}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} className='justify-content-start'>
+                                                <FormControl fullWidth sx={{ mt: 5, pb: 2, mb: 2, flex: '1' }}>
+                                                    <InputLabel id="demo-multiple-checkbox-label">Administrators</InputLabel>
+                                                    <Select
+                                                        labelId="demo-multiple-checkbox-label"
+                                                        id="demo-multiple-checkbox"
+                                                        label="Administrators"
+                                                        value={selectedAdmin}
+                                                        onChange={handleAdminChange}
+                                                        MenuProps={MenuProps}
+                                                    >
+                                                        {companyAdministrators.map((admin) => (
+                                                            <MenuItem key={admin.id} value={admin.id}>
+                                                                <ListItemText primary={`${admin.first_name} ${admin.last_name}`} />
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+
+                                                    <div className='mt-3'>
+                                                        {predefinedDates.map((predefinedDate) => (
+                                                            <Chip
+                                                                key={predefinedDate.id}
+                                                                className='mt-2'
+                                                                label={`Admin: ${predefinedDate.companyAdminId}, Date: ${formatMillisecondsToDate(predefinedDate.dateTimeInMs)}, Duration: ${predefinedDate.duration} min`}
+                                                                onDelete={() => handleDelete(predefinedDate.id)}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </FormControl>
+
+                                            </div>
+                                        </Grid>
+                                        <Grid item xs={4} className='d-flex flex-column'>
+                                            <div className="calendar-wrapper d-flex justify-content-center p-2 mt-2">
+                                            <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                                <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+                                                    <DemoItem label="Pick a date">
+                                                        <DateCalendar value={date} onChange={(newDate) => setDate(newDate)} />
+                                                    </DemoItem>
+                                                </DemoContainer>
+                                            </LocalizationProvider>
+                                            </div>
+                                            <Box
+                                                component="form"
+                                                sx={{ '& > :not(style)': { m: 1, width: '100%' }, }}
+                                                noValidate
+                                                autoComplete="off"
+                                            >
+                                                <TextField
+                                                    id="outlined-basic-time"
+                                                    label="Starting time"
+                                                    placeholder='08:00'
+                                                    variant="outlined"
+                                                    value={time}
+                                                    onChange={handleTimeChange}
+                                                />
+                                                <TextField
+                                                    id="outlined-basic"
+                                                    label="Duration"
+                                                    variant="outlined"
+                                                    value={duration}
+                                                    onChange={handleDurationChange}
+                                                />
+                                                
+                                            </Box>
+                                        </Grid>
+                                        <Button variant="contained" className='button-add mb-3' onClick={handleAddClick}>
+                                            Add
+                                        </Button>
+                                    </Grid>
+                                </div>
+
+                            </>
+                        ) : (<div></div>)}
+                    </div>
+                    {role === "companyAdmin" ? (
+                        <div style={{ width: '80vw', margin: 'auto' }}>
+                            {editMode ? (
+                                <Stack spacing={2} direction="row">
+                                    <Button variant="contained" onClick={handleSaveClick} className='button-wrapper' color="secondary">
+                                        Save
+                                    </Button>
+                                    <Button variant="outlined" onClick={handleCancelClick} className='button-cancel' color="secondary">
+                                        Cancel
+                                    </Button>
+                                </Stack>
+                            ) : (
+                                <Button variant="contained" onClick={handleEditClick} className='button-wrapper' color="secondary">
+                                    Edit
                                 </Button>
-                            </FormControl>
+                            )}
                         </div>
                     ) : (
                         <div></div>
                     )}
-
-                    {editMode ? (
-                        <FormControl fullWidth sx={{ maxWidth: '80vw', mt: 5 }}>
-                            <InputLabel id="demo-multiple-checkbox-label">Administrators</InputLabel>
-                            <Select
-                                labelId="demo-multiple-checkbox-label"
-                                id="demo-multiple-checkbox"
-                                label="Administrators"
-                                multiple
-                                value={selectedAdmins}
-                                onChange={handleAdminChange}
-                                renderValue={(selected) => (
-                                    <div>
-                                        {selected.map((adminId) => {
-                                            const admin = companyAdministrators.find((admin) => admin.id === adminId);
-                                            return (
-                                                <Chip key={adminId} label={`${admin?.first_name} ${admin?.last_name}`} />
-                                            );
-
-                                        })}
-
-                                    </div>
-                                )}
-                                MenuProps={MenuProps}
-                            >
-                                {companyAdministrators.map((admin) => (
-                                    <MenuItem key={admin.id} value={admin.id}>
-                                        <Checkbox checked={selectedAdmins.includes(admin.id)} />
-                                        <ListItemText primary={`${admin.first_name} ${admin.last_name}`} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                    ) : (<div></div>)}
-
-                    {editMode ? (
-                        <FormControl fullWidth sx={{ mt: 5, width: '80vw', mb: 5 }}>
-                            <Stack spacing={1} direction="row">
-                                <InputLabel id="demo-multiple-checkbox-label">Free Dates</InputLabel>
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    label="Free Dates"
-                                    multiple
-                                    value={selectedFreeDates}
-                                    onChange={handleFreeDatesChange}
-                                    sx={{ width: '100%' }}
-                                    renderValue={(selected) => (
-                                        <div>
-                                            {selected.map((date) => (
-                                                <Chip key={date} label={formatMillisecondsToDate(date)} />
-                                            ))}
-                                        </div>
-                                    )}
-                                    MenuProps={MenuProps}>
-                                    {companyData.equipemntsFreeMilliseconds.map((date) => (
-                                        <MenuItem key={date} value={date}>
-                                            <Checkbox checked={selectedFreeDates.includes(date)} />
-                                            <ListItemText primary={formatMillisecondsToDate(date)} />
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DemoContainer components={['DatePicker', 'DatePicker']}>
-                                        <DatePicker
-                                            label="Add new date"
-                                            onChange={handleDatePickerChange}
-                                            sx={{ width: '50%' }}
-                                        />
-                                    </DemoContainer>
-                                </LocalizationProvider>
-                            </Stack>
-                        </FormControl>
-                    ) : <div></div>}
-                </div>
-                {role === "companyAdmin" ? (
-                    <div style={{ width: '80vw', margin: 'auto' }}>
-                        {editMode ? (
-                            <Stack spacing={2} direction="row">
-                                <Button variant="contained" onClick={handleSaveClick} sx={{ width: '100%', mt: 5 }} color="secondary">
-                                    Save
-                                </Button>
-                                <Button variant="outlined" onClick={handleCancelClick} sx={{ width: '100%', mt: 5 }} color="secondary">
-                                    Cancel
-                                </Button>
-                            </Stack>
-                        ) : (
-                            <Button variant="contained" onClick={handleEditClick} sx={{ width: '100%', mt: 5 }} color="secondary">
-                                Edit
-                            </Button>
-                        )}
-                    </div>
-                ) : (
-                    <div></div>
-                )}
-            </Stack>
-        </div>
+                </Stack>
+            </div>
         </>
     );
 }

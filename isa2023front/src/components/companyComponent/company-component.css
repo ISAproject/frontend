@@ -1,0 +1,17 @@
+.button-wrapper, .button-add, .button-cancel{
+    width: 100%;
+}
+
+.button-add{
+    background-color: #c5ab85 !important;
+
+    margin-bottom: 0;
+}
+
+.button-cancel{
+    background-color: #F6F6F6 !important;
+}
+
+.calendar-wrapper{
+    background-color: #e9dfd1c9;
+}
