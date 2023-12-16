@@ -20,6 +20,7 @@ import UpdateCompanyAdminComponent from './components/upateCompanyAdminComponent
 import CompanyCreationContainer from "./containers/companyCreationContainer/CompanyCreationContainer";
 import ReserveEquipmentComponent from './components/reserveEquipmentComponent/reserve-equipment-component';
 import StepperComponent from './components/reserveEquipmentComponent/stepper-component';
+import CompanyCalendarContainer from "./containers/companyCallendarContainer/CompanyCalendarContainer";
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -42,6 +43,7 @@ function App() {
           <Route path="/companycreation" element={<CompanyCreationContainer/>}></Route>
           <Route path="/company/reserve-equipment/:id" element={<ReserveEquipmentComponent/>}></Route>
           <Route path="/stepper" element={<StepperComponent/>}></Route>
+          <Route path="/company-calendar/:id" element={<CompanyCalendarContainer/>}></Route>
           
         </Routes>
       </BrowserRouter>
