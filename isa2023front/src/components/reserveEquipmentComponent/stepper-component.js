@@ -21,7 +21,7 @@ import ListItem from '@mui/material/ListItem';
 import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
 import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
-
+import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
 
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
@@ -34,19 +34,21 @@ export function StepperComponent() {
     });
     GetCompanyById(-1).then((res)=>{
       setCompany(res.data);
-      GetPredefinedDates(res.data.predefinedDatesId).then((res)=>{
-        let predefDates=res.data.filter(item=>item.dateTimeInMs > new Date().getTime());
+      GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
+        // result.data.forEach(element => {
+        //   console.log(new Date(element.dateTimeInMs).toDateString());
+        // });
+        const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime());
         setMainDates(predefDates);
         setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
-        console.log(res.data)
+
+        
+        
       });
 
     });
   },[]);
   const [mainDates, setMainDates] = React.useState([]);
-
-
-
   const [equipment, setEquipment] = React.useState([]);
   const [company,setCompany]=React.useState({});
   const [dates,setDates]=React.useState([]);
@@ -61,10 +63,34 @@ export function StepperComponent() {
     } 
   }
 
-  const items = ['Item 1', 'Item 2', 'Item 3'];
+  const validateDate=(reservedDate)=>{
+    if(reservedDate.duration<=0 || reservedDate.equipments.length==0 || reservedDate.dateTimeInMS>=new Date().getTime()){
+      return true;
+    }
+    return false;
+  }
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1); 
+    
+
+    if(activeStep==steps.length - 1){
+      
+      let reservedDate={
+        duration: selectedDate.duration,
+        equipments: checked,
+        companyAdminId: selectedDate.companyAdminId,
+        dateTimeInMS: selectedDate.dateTimeInMs,
+        userId: -1
+      }
+      if(validateDate(reservedDate)){
+        CreateReservedDateWithMail(reservedDate,'jovan.katanic204@gmail.com');
+      }else{
+        alert("error");
+      }
+      
+    }else{
+      setActiveStep((prevActiveStep) => prevActiveStep + 1); 
+    }
   };
 
   const handleBack = () => {
@@ -74,6 +100,9 @@ export function StepperComponent() {
 
   const handleReset = () => {
     setActiveStep(0);
+    setChecked([]);
+    setSelectedDate({});
+    
   };
   
   const listStyle = {
@@ -82,25 +111,22 @@ export function StepperComponent() {
     overflowY: 'auto',
     maxHeight: '30vh',
     marginTop:'1.5vh',
-    
-    
   };
   const listItemStyle = (date) => ({
-    background: selectedDate.id === date.id ? '#a0a0a0' : 'transparent',
+    background: selectedDate.id === date.id ? '#2196F3' : 'transparent',
     justifyContent: 'center',
+    height:'5vh',
   });
   const handleItemClick = (date) => {
     setSelectedDate(date);
     console.log(date);
   };
-  const [selectedDate, setSelectedDate] = useState({id:0});
+  const [selectedDate, setSelectedDate] = useState({});
 
   const [pickedDate, setPickedDate] = useState(null);
   const handleDatepicker=(date)=>{
     
     setPickedDate(date);
-    //console.log(date.toLocaleString());
-     // Replace this with your date string
     const dateObject = new Date(date);
     const dateInMs = dateObject.getTime();
     console.log(dateInMs);
@@ -109,6 +135,29 @@ export function StepperComponent() {
     setDates(variable);
     console.log(mainDates);
     console.log(variable);
+  }
+
+  const formatDate=(milliseconds,duration)=>{
+    const date=new Date(milliseconds);
+    const endDate=new Date(milliseconds+duration*60000);
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const endHours=endDate.getHours();
+    const endMinutes=endDate.getMinutes();
+
+    const padZero = (value) => (value < 10 ? `0${value}` : value);
+    const timePart = `${padZero(hours)}:${padZero(minutes)}`;
+    const endTimePart=`${padZero(endHours)}:${padZero(endMinutes)}`;
+    //date.getMonth()+'/'+date.getDay()+'/'+date.getFullYear()
+    const month=date.getMonth();
+    const day=date.getDay();
+    const year=date.getFullYear();
+
+
+    const datePart=`${padZero(month)}/${padZero(day)}/${year}`;
+    return datePart+ ' ' + timePart + ' - ' +endTimePart ;
   }
 
 
@@ -140,8 +189,8 @@ export function StepperComponent() {
       }
       {(activeStep === 0) &&
         <React.Fragment>
-        <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
-            <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
+        <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }} >
+            <TableContainer component={Paper} sx={{ maxWidth: '100%',height:'40vh' }}>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -170,22 +219,27 @@ export function StepperComponent() {
     }
     {(activeStep === 1) &&
         <React.Fragment>
+          <Box style={{height:'43vh', marginTop:'3vh'}}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
-                    <DatePicker label="Select date" onChange={handleDatepicker} value={pickedDate}/>
+                    <DatePicker label="Pick a date if none of the above are suiting!"
+                    onChange={handleDatepicker} 
+                    value={pickedDate} 
+                    sx={{ width: '100%' }}/>
                 </DemoContainer>
             </LocalizationProvider>
             
             <List sx={listStyle}>
                 {dates.map((date, index) => (
-                    <ListItem key={date.id} button
+                    <ListItem key={date.id} button 
                     onClick={() => handleItemClick(date)}
                     style={listItemStyle(date)}>
-                        {new Date(date.dateTimeInMs).toLocaleString()} -- {new Date(date.dateTimeInMs+date.duration*60000).toLocaleString()}
+                        {formatDate(date.dateTimeInMs,date.duration)}
                     </ListItem>
                     
                 ))}
             </List>
+          </Box>  
         </React.Fragment>
     }
     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
