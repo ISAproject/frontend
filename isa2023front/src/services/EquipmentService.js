@@ -24,17 +24,45 @@ export const findEquipmentById=(id)=>{
     return axios.get("http://localhost:8090/api/v1/equipment/"+id);
 }
 export const GetEquipmentByCompanyId=(companyId)=>{
-    return axios.get("http://localhost:8090/api/v1/equipment/forCompany/"+companyId);
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.get("http://localhost:8090/api/v1/equipment/forCompany/"+companyId, options);
 }
 
 export const CreateEquipment = (equipment) => {
-    return axios.post("http://localhost:8090/api/v1/equipment", equipment);
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.post("http://localhost:8090/api/v1/equipment", equipment, options);
 }
 
 export const UpdateEquipment = (id, equipment) => {
-    return axios.put("http://localhost:8090/api/v1/equipment/" + id, equipment);
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.put("http://localhost:8090/api/v1/equipment/" + id, equipment,options);
 }
 
 export const DeleteEquipment = (id) => {
-    return axios.delete("http://localhost:8090/api/v1/equipment/" + id);
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.delete("http://localhost:8090/api/v1/equipment/" + id, options);
 }
