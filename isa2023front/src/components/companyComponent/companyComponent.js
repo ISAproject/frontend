@@ -88,6 +88,7 @@ function CompanyComponent() {
     const [time, setTime] = useState();
     const [datesToDelete, setDatesToDelete] = useState([])
     const [newEquipment, setNewEquipment] = useState({
+        id: 0,
         name: '',
         type: 0,
         grade: '',
@@ -127,8 +128,6 @@ function CompanyComponent() {
                 setEquipment(equipmentRes.data);
                 setCompanyAdministrators(companyAdminsRes.data);
                 setExistingReservedDates(existingReservedDatesRes.data);
-
-                console.log(existingReservedDates)
 
                 const filteredData = predefinedDatesRes.data.filter(d => companyRes.data.administratorId.filter(id => id == d.companyAdminId).length > 0)
 
@@ -270,18 +269,25 @@ function CompanyComponent() {
         }
     }
 
-    const handleAddEquipmentClick = () => {
-        setEquipment([...equipment, newEquipment])
-        CreateEquipment(newEquipment);
+    const handleAddEquipmentClick = async () => {
+        try {
+            const eq = await CreateEquipment(newEquipment);
+            console.log(eq)
+            setEquipment([...equipment, eq.data])
 
-        setNewEquipment({
-            name: '',
-            type: 0,
-            grade: '',
-            companyId: id,
-            description: '',
-            quantity: 0
-        })
+            setNewEquipment({
+                name: '',
+                type: 0,
+                grade: '',
+                companyId: id,
+                description: '',
+                quantity: 0
+            })
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+
     }
 
     const handleEditEquipmentClick = (equipmentEdit) => {
@@ -535,7 +541,7 @@ function CompanyComponent() {
 
                                         <Button variant="contained" onClick={handleSearch} className='button-add'>Search</Button>
                                         <br></br>
-                                        <Button variant="contained" onClick={handleReset} className='button-cancel' sx={{color: '#c5ab85'}}>Reset</Button>
+                                        <Button variant="contained" onClick={handleReset} className='button-cancel' sx={{ color: '#c5ab85' }}>Reset</Button>
 
                                     </Box>
                                 </Box>
@@ -701,7 +707,7 @@ function CompanyComponent() {
                                                         value={selectedAdmin}
                                                         onChange={handleAdminChange}
                                                         MenuProps={MenuProps}
-                                                        sx={{bgcolor:'white'}}
+                                                        sx={{ bgcolor: 'white' }}
                                                     >
                                                         {companyAdministrators.map((admin) => (
                                                             <MenuItem key={admin.id} value={admin.id}>
