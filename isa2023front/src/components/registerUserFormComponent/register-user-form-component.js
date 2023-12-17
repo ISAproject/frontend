@@ -23,7 +23,8 @@ const RegisterUserFormComponent = () => {
     city: '',
     role: '',
     company_info: '',
-    occupation: ''
+    occupation: '',
+    firstLogin: true
   });
 
   const [errors, setErrors] = useState({
@@ -80,7 +81,8 @@ const RegisterUserFormComponent = () => {
         role: formData.role, 
         company_info: formData.company_info,
         occupation: formData.occupation,
-        is_verified: false
+        is_verified: false,
+        firstLogin: true
       };
       GetUserByEmail(user.email).then((res)=>{
         if (!res.data) {

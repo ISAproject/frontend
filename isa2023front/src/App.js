@@ -32,9 +32,9 @@ function App() {
         <Routes>
           <Route path="/user/page" element={<UserViewContainer/>}></Route>
           <Route path="/companies" element={<AllCompaniesComponent/>}></Route>
-          <Route path="/company/:id/:role" element={<CompanyComponent/>}></Route>
+          <Route path="/company/:id" element={<CompanyComponent/>}></Route>
           <Route path="/equipment/:id" element={<EquipmentComponent/>}></Route>
-          <Route path="/companyAdmin/:id" element={<UpdateCompanyAdminComponent/>}></Route>
+          <Route path="/companyAdmin" element={<UpdateCompanyAdminComponent/>}></Route>
           <Route path="/home" element={<HomePageContainer/>}></Route>
           <Route path="/register" element={<RegisterUserContainer/>}></Route>
           <Route path="/verify/:id" element={<VerifyUserContainer/>}></Route>

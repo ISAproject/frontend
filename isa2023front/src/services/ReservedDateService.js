@@ -20,6 +20,16 @@ export const GetAllReservedDates = () => {
     return axios.get("http://localhost:8090/api/v1/reservedDate");
 }
 
+export const GetTrackingsByEquipmentId = (id) => {
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.get("http://localhost:8090/api/v1/reservedDate/trackingOrder/" + id, options);
+}
 export const GetReservedDatesByUserId = (userId) => {
     return axios.get("http://localhost:8090/api/v1/reservedDate/reservedDates/"+userId);
 }

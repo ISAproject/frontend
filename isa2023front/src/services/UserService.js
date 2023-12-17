@@ -26,3 +26,14 @@ export const GetLastUser=()=>{
 export const GetUserByUsername=(username)=>{
     return axios.get("http://localhost:8090/api/v1/user/username/"+username);
 }
+
+export const UpdateCompanyAdmin = (id, user) =>{
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.put("http://localhost:8090/api/v1/user/updateCompanyAdmin/" + id, user, options);
+}
