@@ -55,7 +55,16 @@ function AllCompaniesComponent() {
 
 
   useEffect(() => {
+    
+    GetAllCompanies()
+    .then((resComp) => {
+      setCompanies(resComp.data);
+    })
+    .catch((error) => {
+      console.error('Error fetching companies:', error);
+    });
 
+    if(authUser){
     GetUserByUsername(authUser.username)
       .then((res) => {
         setUser(res.data);
@@ -65,18 +74,7 @@ function AllCompaniesComponent() {
       .catch((error) => {
         console.error('Error fetching user:', error);
       })
-      .finally(() => {
-        if (user) {
-          GetAllCompanies()
-            .then((resComp) => {
-              setCompanies(resComp.data);
-            })
-            .catch((error) => {
-              console.error('Error fetching companies:', error);
-            });
-        }
-        console.log(user)
-      });
+    }
   }, []);
 
 
