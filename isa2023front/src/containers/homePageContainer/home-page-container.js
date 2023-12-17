@@ -37,7 +37,7 @@ export default function HomePageContainer() {
           console.error('Error fetching user:', error);
         })
     }
-  });
+  }, [user.username]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>

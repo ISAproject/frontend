@@ -50,7 +50,10 @@ const LoginFormComponent = () => {
             authService.login(credentials).then(() =>{
               console.log(localStorage.getItem('authUser')); 
               history(`/logged`);
-            });
+            }).catch(() =>{
+              alert("Password missmatch");
+            
+            })
         }
         else{
             alert('Invalid account.');
