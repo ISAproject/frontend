@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import theme from '../../styles/theme';
 import { useState, useEffect } from 'react';
 import { GetUserByUsername, UpdateCompanyAdmin } from '../../services/UserService';
+import { IsPasswordChange} from '../../services/UserService';
 import authService from '../../services/auth.service.js';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import TextField from '@mui/material/TextField';
@@ -18,23 +19,29 @@ import * as styles from './logged-user-container.css';
 
 
 export default function LoggedUserContainer() {
-  const [user, setUser] = useState({});
-  const authUser = localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
+    const [user, setUser] = useState({});
+    const authUser =  localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
+    const [isch, setIsch] = useState(false);
+    useEffect(() => {
+      console.log(authUser);
+      if(!authUser)
+        return;
+        GetUserByUsername(authUser?.username)
+          .then(response => {
+            let userData = response.data;
+            userData.password = '';
+            setUser(userData);
+            IsPasswordChange(response.data.username).then(res=>
+                {
+                    setIsch(res.data);
+                }
 
-  useEffect(() => {
-    console.log(authUser);
-    if (!authUser)
-      return;
-    GetUserByUsername(authUser?.username)
-      .then(response => {
-        let userData = response.data;
-        userData.password = '';
-        setUser(userData);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }, []);
+            )
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }, []);
 
   function logOut() {
     window.location.href = '/home';
@@ -128,6 +135,17 @@ export default function LoggedUserContainer() {
             </AppBar>
           </Box>
         </>
+      }
+      {
+          (user && !isch)
+              ?
+              <>
+                  <Button component={Link} to="/changepassword">Change password</Button>
+              </>
+              :
+              <>
+
+              </>
       }
     </>
   );

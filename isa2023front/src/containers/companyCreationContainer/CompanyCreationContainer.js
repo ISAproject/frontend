@@ -6,6 +6,8 @@ import { Box } from "@mui/material";
 import { useParams } from 'react-router-dom';
 import EquipmentSearchComponent from "../../components/equipmentSearchComponent/equipmentSearchComponent";
 import CompanyCreationComponent from "../../components/CompanyCreationComponent/companyCreationComponent";
+import RegisterUserFormComponent from "../../components/registerUserFormComponent/register-user-form-component";
+import RegisterSystemAdminComponent from "../../components/registerSystemAdminComponent/registerSystemAdminComponent";
 function CompanyCreationContainer() {
     let company = {
         address: '',
@@ -19,8 +21,9 @@ function CompanyCreationContainer() {
 
 
     return (
-      <Box width={300}>
-          <CompanyCreationComponent></CompanyCreationComponent>
+      <Box>
+          {/*<CompanyCreationComponent></CompanyCreationComponent>*/}
+          <RegisterSystemAdminComponent></RegisterSystemAdminComponent>
       </Box>
     );
   }

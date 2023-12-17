@@ -7,7 +7,9 @@ export const GetUserById=(userId)=>{
 export const UpdateUser=(userId,user)=>{
     return axios.put("http://localhost:8090/api/v1/user/"+userId,user);
 }
-
+export const UpdateUserPassword=(userId,user)=>{
+    return axios.put("http://localhost:8090/api/v1/user/updatepassword/"+userId,user);
+}
 export const GetUserByEmail=(email)=>{
     return axios.get("http://localhost:8090/api/v1/user/email/"+email);
 }
@@ -36,4 +38,7 @@ export const UpdateCompanyAdmin = (id, user) =>{
     };
 
     return axios.put("http://localhost:8090/api/v1/user/updateCompanyAdmin/" + id, user, options);
+}
+export const IsPasswordChange=(username)=>{
+    return axios.put("http://localhost:8090/api/v1/user/ispasschanged/"+username);
 }
