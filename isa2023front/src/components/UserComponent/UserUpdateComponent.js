@@ -83,7 +83,7 @@ function UserUpdateComponent({userInfoFunction,userId}) {
   
   return (
     <React.Fragment>
-      <Button variant="contained" color='secondary' onClick={handleClickOpen}>  
+      <Button variant="contained" color='secondary' onClick={handleClickOpen} fullWidth>  
         Update user info
       </Button>
       <Dialog open={open} onClose={handleClose}>
