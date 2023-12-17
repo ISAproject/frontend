@@ -25,8 +25,8 @@ import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GetUserByUsername } from '../../services/UserService';
-
-
+import './reserve-equipment-component.css';
+import { UpdatePredefineDate } from '../../services/PredefinedDatesService';
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
 export function StepperComponent({handleClose}) {
@@ -43,7 +43,8 @@ export function StepperComponent({handleClose}) {
     GetCompanyById(-1).then((res)=>{
       //setCompany(res.data);
       GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
-        const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime());
+        const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime() && item.free===true);
+
         setMainDates(predefDates);
         setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
       });
@@ -90,11 +91,16 @@ export function StepperComponent({handleClose}) {
         equipments: checked,
         companyAdminId: selectedDate.companyAdminId,
         dateTimeInMS: selectedDate.dateTimeInMs,
-        userId: -1
+        userId: userId
       }
       if(validateDate(reservedDate)){
         CreateReservedDateWithMail(reservedDate,'jovan.katanic204@gmail.com');
+      
+        const updateDate={ ...selectedDate, free: false };
+        UpdatePredefineDate(updateDate);
+        console.log(updateDate);
         
+        //UpdatePredefineDate()
         toast.success("Your reservation has been added!");
         handleClose();
       }else{
@@ -193,13 +199,13 @@ export function StepperComponent({handleClose}) {
       </Stepper>
       {activeStep === 2 &&
         <React.Fragment>
-        <Typography sx={{ mt: 10, mb: 1,textAlign: 'center', }}>
-            All steps completed - you&apos;re finished
+        <Typography sx={{ mt: 10, mb: 1,textAlign: 'center' }}>
+           <h1> All steps completed - you&apos;re finished </h1>
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-            <Box sx={{ flex: '1 1 auto' }} />
+          <Box sx={{ flex: '1 1 auto' }} />
             <Button onClick={handleReset}>Reset</Button>
-        </Box>
+          </Box>
         </React.Fragment>
       }
       {(activeStep === 0) &&
