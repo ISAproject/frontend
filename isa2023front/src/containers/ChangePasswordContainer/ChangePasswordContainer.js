@@ -1,6 +1,12 @@
 import UserInfoComponent from "../../components/UserInfoComponent/UserInfoComponent";
 import UserUpdateComponent from "../../components/UserComponent/UserUpdateComponent"
-import {GetUserByEmail, GetUserById, GetUserByUsername, UpdateUser} from "../../services/UserService";
+import {
+    GetUserByEmail,
+    GetUserById,
+    GetUserByUsername,
+    UpdateUser,
+    UpdateUserPassword
+} from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
 import { Box } from "@mui/material";
 import {Link, useParams} from 'react-router-dom';
@@ -72,7 +78,7 @@ function ChangePasswordContainer() {
                 occupation: user.occupation,
                 is_verified: true
             };
-            UpdateUser(user.id,user1).then(response=>
+            UpdateUserPassword(user.id,user1).then(response=>
             {
                 alert("Password is changed!")
                 history('/logged');
