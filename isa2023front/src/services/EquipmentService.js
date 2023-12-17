@@ -26,3 +26,15 @@ export const findEquipmentById=(id)=>{
 export const GetEquipmentByCompanyId=(companyId)=>{
     return axios.get("http://localhost:8090/api/v1/equipment/forCompany/"+companyId);
 }
+
+export const CreateEquipment = (equipment) => {
+    return axios.post("http://localhost:8090/api/v1/equipment", equipment);
+}
+
+export const UpdateEquipment = (id, equipment) => {
+    return axios.put("http://localhost:8090/api/v1/equipment/" + id, equipment);
+}
+
+export const DeleteEquipment = (id) => {
+    return axios.delete("http://localhost:8090/api/v1/equipment/" + id);
+}
