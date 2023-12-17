@@ -9,7 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Button from '@mui/material/Button';
+import { Button, Rating } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
@@ -45,6 +45,10 @@ import { CreateEquipment, UpdateEquipment, DeleteEquipment } from '../../service
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { findEquipmentByName, GetEquipments } from "../../services/EquipmentService";
+import StarIcon from '@mui/icons-material/Star';
+import '../equipmentSearchComponent/equipment-search-component.css';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -104,6 +108,10 @@ function CompanyComponent() {
 
     const [equipmentIdEdit, setEquipmentIdEdit] = useState(0)
     const [existingReservedDates, setExistingReservedDates] = useState([])
+
+    const [textboxValue, setTextboxValue] = useState('');
+    const [ratingValue, setRatingValue] = useState(0);
+    const [hover, setHover] = useState(-1);
 
 
     useEffect(() => {
@@ -315,6 +323,72 @@ function CompanyComponent() {
         DeleteEquipment(id);
     }
 
+    const equipmentTypeToString = (type) => {
+        switch (type) {
+            case 0:
+                return "DIAGNOSTIC_EQUIPMENT"
+            case 1:
+                return "DURABLE_MEDICAL_EQUIPMENT"
+            case 2:
+                return "TREATMENT_EQUIPMENT"
+            case 3:
+                return "LIFE_SUPPORT_EQUIPMENT"
+            default: return type
+        }
+    }
+
+    const equipmentTypeToInt = (type) => {
+        switch (type) {
+            case "DIAGNOSTIC_EQUIPMENT":
+                return 0
+            case "DURABLE_MEDICAL_EQUIPMENT":
+                return 1
+            case "TREATMENT_EQUIPMENT":
+                return 2
+            case "LIFE_SUPPORT_EQUIPMENT":
+                return 3
+            default: return type
+        }
+    }
+
+    const handleTextBoxChange = (event) => {
+        setTextboxValue(event.target.value);
+    };
+    const handleSearch = () => {
+        findEquipmentByName(textboxValue, ratingValue)
+            .then((res) => {
+                const filteredRes = res.data.filter(e => e.companyId == id);
+                setEquipment(filteredRes);
+            })
+            .catch((error) => console.error('Error fetching equipments data:', error));
+
+    }
+    const handleReset = () => {
+        GetEquipmentByCompanyId(id)
+            .then((res) => {
+                setEquipment(res.data);
+                setTextboxValue("");
+                setRatingValue(0);
+            })
+            .catch((error) => console.error('Error fetching equipments data:', error));
+
+    }
+    function getLabelText(value) {
+        return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+    }
+    const labels = {
+        0.5: 'Useless',
+        1: 'Useless+',
+        1.5: 'Poor',
+        2: 'Poor+',
+        2.5: 'Ok',
+        3: 'Ok+',
+        3.5: 'Good',
+        4: 'Good+',
+        4.5: 'Excellent',
+        5: 'Excellent+',
+    };
+
     return (
         <>
             <AppBar position="static" color='secondary'>
@@ -390,7 +464,85 @@ function CompanyComponent() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
-                        {/* <EquipmentSearchComponent/> */}
+
+                        {editMode ? (
+                            <>
+                                <Box
+                                    borderRadius={10}  // Set the border radius
+                                    padding={5}
+                                    sx={{
+                                        background: 'radial-gradient(ellipse 75% 200px at center,#e5f3d0 40%, transparent 70%)',
+                                        marginLeft: '60px',
+                                        marginRight: '60px',
+                                        width: '80vw'
+                                    }}>
+                                    <Box
+                                        sx={{
+
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            marginLeft: '100px',
+                                            marginRight: '100px',
+
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                flexDirection: 'column',
+                                                marginBottom: '10px'
+                                            }}>
+                                            <TextField
+                                                id="outlined-basic"
+                                                label="Search"
+                                                variant="outlined"
+                                                color='secondary'
+                                                value={textboxValue}
+                                                onChange={handleTextBoxChange}
+                                                fullWidth
+                                                margin='normal'
+                                                focused />
+                                            <label className='labelClass'>Rating: </label>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                                width: '200px',
+                                                margin: 'normal',
+                                                justifyContent: 'space-between'
+                                            }}>
+
+                                                <Rating
+                                                    name="hover-feedback"
+                                                    value={ratingValue}
+                                                    precision={0.5}
+                                                    getLabelText={getLabelText}
+                                                    onChange={(event, newValue) => {
+                                                        setRatingValue(newValue);
+                                                    }}
+                                                    onChangeActive={(event, newHover) => {
+                                                        setHover(newHover);
+                                                    }}
+                                                    size='large'
+                                                    emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                                                />
+
+                                                {ratingValue !== null && (
+                                                    <Box sx={{ ml: 2, color: 'secondary' }}>{labels[hover !== -1 ? hover : ratingValue]}</Box>
+                                                )}
+                                            </Box>
+                                        </Box>
+
+                                        <Button variant="contained" onClick={handleSearch} color='secondary'>Search</Button>
+                                        <br></br>
+                                        <Button variant="contained" onClick={handleReset} color='secondary'>Reset</Button>
+
+                                    </Box>
+                                </Box>
+
+                            </>) : (<></>)}
                         <Box sx={{ width: '80vw', margin: 'auto', mt: 5, bgcolor: 'background.paper' }}>
                             <TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
                                 <Table>
@@ -425,7 +577,7 @@ function CompanyComponent() {
                                                                 <Select
                                                                     labelId="demo-simple-select-label"
                                                                     id="demo-simple-select"
-                                                                    value={editEquipment.type}
+                                                                    value={equipmentTypeToInt(editEquipment.type)}
                                                                     label="Equipment type"
                                                                     onChange={(e) => handleEditEquipmentInputChange('type', e.target.value)}
                                                                 >
@@ -458,18 +610,18 @@ function CompanyComponent() {
                                                 ) : (
                                                     <>
                                                         <TableCell>{equipmentItem.name}</TableCell>
-                                                        <TableCell>{equipmentItem.type}</TableCell>
+                                                        <TableCell>{equipmentTypeToString(equipmentItem.type)}</TableCell>
                                                         <TableCell>{equipmentItem.grade}</TableCell>
                                                         {editMode ? (
                                                             <>
                                                                 <TableCell>{equipmentItem.description}</TableCell>
                                                                 <TableCell>{equipmentItem.quantity}</TableCell>
                                                                 <TableCell><EditIcon className='button-remove-equipment' onClick={() => handleEditEquipmentClick(equipmentItem)} /></TableCell>
-                                                                {existingReservedDates.findIndex(date => date.equipments.includes(equipmentItem.id)) === -1 ? (
-                                                                    <TableCell><DeleteIcon className='button-remove-equipment' onClick={() => handleRemoveEquipmentClick(equipmentItem.id)} 
+                                                                {existingReservedDates.findIndex(date => !date.pickedUp && date.equipments.includes(equipmentItem.id)) === -1 ? (
+                                                                    <TableCell><DeleteIcon className='button-remove-equipment' onClick={() => handleRemoveEquipmentClick(equipmentItem.id)}
                                                                     /></TableCell>
-                                                                ): (<TableCell></TableCell>)}
-                                                                
+                                                                ) : (<TableCell></TableCell>)}
+
                                                             </>
                                                         ) : (<></>)}
                                                     </>
