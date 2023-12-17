@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {GetByComapany} from "../../services/ReservedDateService";
+import {GetByComapany, GetByComapanyByWeek,GetByComapanyByMonth,GetByComapanyByYear} from "../../services/ReservedDateService";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -22,17 +22,41 @@ import { Button,TextField,Rating} from '@mui/material';
 
 function formatMillisecondsToDate(milliseconds) {
     const date = new Date(milliseconds);
-    return date.toLocaleString(); // Adjust the format based on your requirements
+    return date.toLocaleString('en-GB'); // Adjust the format based on your requirements
 
 }
 
 function CompanyCalendarComponent() {
     const [reservedDates, setReservedDates] = useState([]);
-    const [timeRadio, setTimeRadio] = useState(false);
+    const [timeRadio, setTimeRadio] = useState(0);
     const id = useParams().id;
     function showDates(radio,month,year) {
-        const selectedMonthIndex = new Date(`${month} 1, 2023`).getMonth();
-        setReservedDates(reservedDates.filter(date =>new Date(date.dateTimeInMS).getMonth() === selectedMonthIndex));
+        if(timeRadio===0)
+            GetByComapanyByWeek(id).then((res)=>
+            {
+                setReservedDates(res.data);
+            })
+                .catch((error) => console.error('Error fetching company data:', error));
+        else
+            if(timeRadio===1)
+                GetByComapanyByMonth(id,month-1,year).then((res)=>
+                {
+                    setReservedDates(res.data);
+                })
+                    .catch((error) => console.error('Error fetching company data:', error));
+            else
+                if(timeRadio===2)
+                    GetByComapanyByYear(id,year).then((res)=>
+                    {
+                        setReservedDates(res.data);
+                    })
+                        .catch((error) => console.error('Error fetching company data:', error));
+                else
+                    GetByComapany(id)
+                        .then((res) => {
+                            setReservedDates(res.data);
+                        })
+                        .catch((error) => console.error('Error fetching company data:', error));
     }
     useEffect(() => {
         GetByComapany(id)
@@ -42,18 +66,30 @@ function CompanyCalendarComponent() {
             .catch((error) => console.error('Error fetching company data:', error));
     }, []);
 
-    const [selectedMonth, setSelectedMonth] = useState('');
-    const [selectedYear, setSelectedYear] = useState('');
-        const [selectedOption, setSelectedOption] = useState('weekly');
+    const [selectedMonth, setSelectedMonth] = useState(12);
+    const [selectedYear, setSelectedYear] = useState(2023);
+    const [selectedOption, setSelectedOption] = useState('weekly');
 
         const handleOptionChange = (event) => {
             setSelectedOption(event.target.value);
-            if(event.target.value==='weekly')
-                setTimeRadio(true);
+            if(event.target.value==='weekly') {
+                setTimeRadio(0);
+            }
             else
-                setTimeRadio(false);
-            console.log(event.target.value);
-            console.log(timeRadio)
+                if(event.target.value==='monthly') {
+                    setTimeRadio(1);
+                    setSelectedMonth(1);
+                    setSelectedYear(2023);
+                }
+                else
+                    if(event.target.value==='yearly'){
+                    setTimeRadio(2);
+                    setSelectedYear(2023);
+                    }
+                    else
+                    {
+                        setTimeRadio(3);
+                    }
         }
     const handleMonthChange = (event) => {
         setSelectedMonth(event.target.value);
@@ -70,7 +106,7 @@ function CompanyCalendarComponent() {
 
 
     const months = [
-        'All','January', 'February', 'March', 'April',
+        'January', 'February', 'March', 'April',
         'May', 'June', 'July', 'August',
         'September', 'October', 'November', 'December'
     ];
@@ -89,7 +125,7 @@ function CompanyCalendarComponent() {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         <span style={{ fontWeight: 'bold' }}>MediConnect</span>
                     </Typography>
                     <Button color="accent" component={Link} to="/home">Home</Button>
@@ -130,36 +166,78 @@ function CompanyCalendarComponent() {
                     />
                     Yearly
                 </label>
-            </div>
-
-
-            <div className="year-dropdown-container" >
-                <label htmlFor="yearSelect" className="label">
-                    Select a Year:
+                <label className="label1">
+                    <input
+                        type="radio"
+                        value="all"
+                        checked={selectedOption === 'all'}
+                        onChange={handleOptionChange}
+                    />
+                    All
                 </label>
-                <select id="yearSelect" className="select"
-                        onChange={handleYearChange}>
-                    {years.map((year, index) => (
+            </div>
 
-                        <option key={index} value={year} className="option">
-                            {year}
-                        </option>
-                    )
+
+            <div>
+                {timeRadio===1 ? (
+                    <div>
+
+                        <div className="year-dropdown-container" >
+                            <label htmlFor="yearSelect" className="label">
+                                Select a Year:
+                            </label>
+                            <select id="yearSelect" className="select" onChange={handleYearChange}
+                            >
+                                {years.map((year, index) => (
+
+                                        <option key={index} value={year} className="option">
+                                            {year}
+                                        </option>
+                                    )
+                                )}
+
+                            </select>
+                        </div>
+                        <div className="month-dropdown-container">
+                            <label htmlFor="monthSelect" className="label">Select a Month: </label>
+                            <select id="monthSelect" className="select"  onChange={handleMonthChange}>
+                                {months.map((month, index) => (
+                                    <option key={index} value={index + 1} className="option">
+                                        {month}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    ):
+                    (
+                        <br></br>
                     )}
+                {timeRadio===2 ? (
 
-                </select>
+                            <div className="year-dropdown-container" >
+                                <label htmlFor="yearSelect" className="label">
+                                    Select a Year:
+                                </label>
+                                <select id="yearSelect" className="select" onChange={handleYearChange}
+                                >
+                                    {years.map((year, index) => (
+
+                                            <option key={index} value={year} className="option">
+                                                {year}
+                                            </option>
+                                        )
+                                    )}
+
+                                </select>
+                            </div>
+
+                    ):
+                    (
+                        <br></br>
+                    )}
             </div>
-            <div className="month-dropdown-container">
-                <label htmlFor="monthSelect" className="label">Select a Month: </label>
-                <select id="monthSelect" className="select" onChange={handleMonthChange}>
-                    {months.map((month, index) => (
-                        <option key={index} value={index + 1} className="option">
-                            {month}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <button color="accent" onClick={() => showDates(true,selectedMonth , selectedYear)}>Show</button>
+            <button className="button"  onClick={() => showDates(true,selectedMonth , selectedYear)}>Show</button>
             <br></br>
             <table className="my-table">
                 <thead>
