@@ -8,8 +8,10 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { GetUserByUsername } from "../../services/UserService";
+import { GetUserByUsername, UpdateCompanyAdmin } from "../../services/UserService";
 import authService from "../../services/auth.service";
+import TextField from '@mui/material/TextField';
+import theme from '../../styles/theme.js';
 
 
 export default function HomePageContainer() {
@@ -23,18 +25,18 @@ export default function HomePageContainer() {
 
   useEffect(() => {
 
-    if(authUser){
-    GetUserByUsername(authUser?.username)
-      .then((res) => {
-        setUser(res.data);
+    if (authUser) {
+      GetUserByUsername(authUser?.username)
+        .then((res) => {
+          setUser(res.data);
 
-
-      })
-      .catch((error) => {
-        console.error('Error fetching user:', error);
-      })
+          console.log(res.data)
+        })
+        .catch((error) => {
+          console.error('Error fetching user:', error);
+        })
     }
-    });
+  });
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -56,16 +58,16 @@ export default function HomePageContainer() {
 
           {authUser ?
             <>
-            {user?.role === 'ROLL_COMPANY_ADMIN' ? 
-              <Button color="accent" component={Link} to="/companyAdmin">Profile</Button>
-              : <></>
-            }
-            <Button color="accent" component={Link} to="/companies">Companies</Button>
-            <Button color="accent" component={Link} onClick={logOut}>Logout</Button>
+              {user?.role === 'ROLL_COMPANY_ADMIN' ?
+                <Button color="accent" component={Link} to="/companyAdmin">Profile</Button>
+                : <></>
+              }
+              <Button color="accent" component={Link} to="/companies">Companies</Button>
+              <Button color="accent" component={Link} onClick={logOut}>Logout</Button>
             </>
             : <><Button color="accent" component={Link} to="/login">Login</Button>
               <Button color="accent" component={Link} to="/register">Register</Button>
-              </>}
+            </>}
 
         </Toolbar>
       </AppBar>

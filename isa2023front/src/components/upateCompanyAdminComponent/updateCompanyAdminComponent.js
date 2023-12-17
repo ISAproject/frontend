@@ -27,6 +27,7 @@ function UpdateCompanyAdminComponent() {
         occupation: '',
         company_info: '',
         verified: true,
+        firstLogin: true
     });
 
     const [errors, setErrors] = useState({
@@ -105,7 +106,8 @@ function UpdateCompanyAdminComponent() {
             password: formData.password,
             role: formData.role, 
             company_info: formData.company_info,
-            verified: formData.verified
+            verified: formData.verified,
+            firstLogin: formData.firstLogin
           };
           UpdateCompanyAdmin(id, user);
 
