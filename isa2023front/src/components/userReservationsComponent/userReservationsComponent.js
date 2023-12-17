@@ -15,7 +15,6 @@ function UserReservationsComponent({userId}) {
         if(userId==0)return;
         GetReservedDatesByUserId(userId).then((res)=>{
             setReservedDates(res.data);
-            //GetCompanyById(res.data.companyId).then((res)=>{});
         });
         
       },[userId]);
@@ -47,18 +46,18 @@ function UserReservationsComponent({userId}) {
     return (
         <React.Fragment>
         <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }} >
-            <TableContainer component={Paper} sx={{ maxWidth: '100%',height:'40vh' }}>
+            <TableContainer component={Paper} sx={{ maxWidth: '100%',minHeight:'40vh' }}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>CompanyId</TableCell>
+                            <TableCell>Company name</TableCell>
                             <TableCell>Date/Time</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                     {reservedDates.map((date) => (
-                            <TableRow key={date.id}>
-                                <TableCell>1</TableCell>
+                            <TableRow key={date.dateTimeInMS}>
+                                <TableCell>{date.companyName}</TableCell>
                                 <TableCell>{formatDate(date.dateTimeInMS,date.duration)}</TableCell>
                             </TableRow>
                         ))}

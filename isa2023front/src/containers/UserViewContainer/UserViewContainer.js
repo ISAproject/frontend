@@ -35,14 +35,23 @@ function UserViewContainer() {
     }
 
     return (
-      <Box width={300}>
+      <Box>
         {authUser
           ?
-        <>
-        <UserInfoComponent user={userData}/>
-        <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
-        <UserReservationsComponent userId={userId}/>
-        </>
+        <Box sx={{
+          display:"flex",
+          justifyContent:"space-between",
+          width:"100vw",
+          padding:"10vh"
+        }}>
+          <Box>
+            <UserInfoComponent user={userData}/>
+            <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
+          </Box>
+          <Box>
+            <UserReservationsComponent userId={userId}/>
+          </Box>
+        </Box>
           :
           <div>
             <h2>Page not found :/</h2>
