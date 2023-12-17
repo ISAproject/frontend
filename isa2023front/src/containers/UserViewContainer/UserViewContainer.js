@@ -4,7 +4,7 @@ import { GetUserById } from "../../services/UserService";
 import React,{useEffect,useState} from 'react';
 import { Box } from "@mui/material";
 import { GetUserByUsername } from "../../services/UserService";
-
+import UserReservationsComponent from "../../components/userReservationsComponent/userReservationsComponent";
 function UserViewContainer() {  
   const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
     let user={
@@ -41,6 +41,7 @@ function UserViewContainer() {
         <>
         <UserInfoComponent user={userData}/>
         <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
+        <UserReservationsComponent userId={userId}/>
         </>
           :
           <div>

@@ -18,3 +18,6 @@ export const GetAllReservedDates = () => {
 export const GetTrackingsByEquipmentId = (id) => {
     return axios.get("http://localhost:8090/api/v1/reservedDate/trackingOrder/" + id);
 }
+export const GetReservedDatesByUserId = (userId) => {
+    return axios.get("http://localhost:8090/api/v1/reservedDate/reservedDates/"+userId);
+}

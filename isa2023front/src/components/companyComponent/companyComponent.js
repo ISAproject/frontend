@@ -54,6 +54,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import ReserveEquipmentComponent from '../reserveEquipmentComponent/reserve-equipment-component';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -827,6 +828,7 @@ function CompanyComponent() {
                             </>
                         ) : (<div></div>)}
                     </div>
+                    
                     {role === "companyAdmin" ? (
                         <div style={{ width: '80vw', margin: 'auto' }}>
                             {editMode ? (
@@ -845,7 +847,7 @@ function CompanyComponent() {
                             )}
                         </div>
                     ) : (
-                        <div></div>
+                        <div><ReserveEquipmentComponent companyId={id}/></div>
                     )}
                 </Stack>
             </div>

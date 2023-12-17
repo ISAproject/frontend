@@ -8,7 +8,7 @@ import StepperComponent from './stepper-component';
 import { ToastContainer } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
   
-function ReserveEquipmentComponent() {
+function ReserveEquipmentComponent({companyId}) {
 
     const [open, setOpen] = React.useState(false);
 
@@ -34,7 +34,7 @@ function ReserveEquipmentComponent() {
           <DialogContentText>
             Steps:
           </DialogContentText>
-          <StepperComponent handleClose={handleClose}/>
+          <StepperComponent handleClose={handleClose} companyId={companyId}/>
         </DialogContent>
       </Dialog>
 
