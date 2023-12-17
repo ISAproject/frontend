@@ -471,9 +471,7 @@ function CompanyComponent() {
                                     borderRadius={10}  // Set the border radius
                                     padding={5}
                                     sx={{
-                                        background: 'radial-gradient(ellipse 75% 200px at center,#e5f3d0 40%, transparent 70%)',
-                                        marginLeft: '60px',
-                                        marginRight: '60px',
+                                        margin: 'auto',
                                         width: '80vw'
                                     }}>
                                     <Box
@@ -535,9 +533,9 @@ function CompanyComponent() {
                                             </Box>
                                         </Box>
 
-                                        <Button variant="contained" onClick={handleSearch} color='secondary'>Search</Button>
+                                        <Button variant="contained" onClick={handleSearch} className='button-add'>Search</Button>
                                         <br></br>
-                                        <Button variant="contained" onClick={handleReset} color='secondary'>Reset</Button>
+                                        <Button variant="contained" onClick={handleReset} className='button-cancel' sx={{color: '#c5ab85'}}>Reset</Button>
 
                                     </Box>
                                 </Box>
@@ -703,6 +701,7 @@ function CompanyComponent() {
                                                         value={selectedAdmin}
                                                         onChange={handleAdminChange}
                                                         MenuProps={MenuProps}
+                                                        sx={{bgcolor:'white'}}
                                                     >
                                                         {companyAdministrators.map((admin) => (
                                                             <MenuItem key={admin.id} value={admin.id}>
@@ -715,7 +714,7 @@ function CompanyComponent() {
                                                         {predefinedDates.map((predefinedDate) => (
                                                             <Chip
                                                                 key={predefinedDate.id}
-                                                                className='mt-2'
+                                                                className='calendar-wrapper mt-2'
                                                                 label={`Admin: ${predefinedDate.companyAdminId}, Date: ${formatMillisecondsToDate(predefinedDate.dateTimeInMs)}, Duration: ${predefinedDate.duration} min`}
                                                                 onDelete={() => handleDelete(predefinedDate.id)}
                                                             />
