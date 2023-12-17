@@ -18,3 +18,7 @@ export const GetSearchedCompanies=(content,rating)=>{
 export const CreateCompany=(company)=>{
     return axios.post("http://localhost:8090/api/v1/company", company);
 }
+
+export const GetAllPredefinedDatesByCompanyId=(companyId)=>{
+    return axios.get("http://localhost:8090/api/v1/company/allpredefineddates/" + companyId);
+}

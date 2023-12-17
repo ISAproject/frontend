@@ -18,6 +18,7 @@ import {Link, useParams} from "react-router-dom";
 // } from "@table-library/react-table-library/table";
 import { Button,TextField,Rating} from '@mui/material';
 import authService from "../../services/auth.service";
+import {GetAllPredefinedDatesByCompanyId} from "../../services/CompanyService";
 
 //import { useTheme } from "@table-library/react-table-library/theme";
 
@@ -35,9 +36,11 @@ function CompanyCalendarComponent() {
     const [timeRadio, setTimeRadio] = useState(0);
     const id = useParams().id;
     function showDates(radio,month,year) {
+        setReservedDates([]);
         if(timeRadio===0)
             GetByComapanyByWeek(id).then((res)=>
             {
+
                 setReservedDates(res.data);
             })
                 .catch((error) => console.error('Error fetching company data:', error));
@@ -249,6 +252,7 @@ function CompanyCalendarComponent() {
                     <th className="table-header">User</th>
                     <th className="table-header">Duration</th>
                     <th className="table-header">Equipments</th>
+                    <th className="table-header">Reserved</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -258,6 +262,13 @@ function CompanyCalendarComponent() {
                         <td className="table-cell">{item.userName} {item.userSurname}</td>
                         <td className="table-cell">{item.duration}</td>
                         <td className="table-cell">{item.equipments.join(', ')}</td>
+                        <td className="table-cell">
+                            {item.userName ? (
+                                <input type="checkbox" checked={true} readOnly />
+                            ) : (
+                                <input type="checkbox" checked={false} readOnly />
+                            )}
+                        </td>
                     </tr>
                 ))}
                 </tbody>
