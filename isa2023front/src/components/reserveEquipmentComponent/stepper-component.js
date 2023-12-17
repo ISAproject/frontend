@@ -29,22 +29,23 @@ import './reserve-equipment-component.css';
 import { UpdatePredefineDate } from '../../services/PredefinedDatesService';
 const steps = ['Select equipment', 'Pick a date', 'Confirm'];
 
-export function StepperComponent({handleClose}) {
+export function StepperComponent({handleClose,companyId}) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [userId,setUserId]=useState(0);
+  const [email,setEmail]=useState("");
   const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   useEffect(()=>{
-    console.log('hi');
-    GetUserByUsername(authUser.username).then((res)=>setUserId(res.data.id));
+    GetUserByUsername(authUser.username).then((res)=>{
+      setUserId(res.data.id);
+      setEmail(res.data.email);
+    });
 
-    GetEquipmentByCompanyId(-1).then((res)=>{
+    GetEquipmentByCompanyId(companyId).then((res)=>{
       setEquipment(res.data);
     });
-    GetCompanyById(-1).then((res)=>{
-      //setCompany(res.data);
+    GetCompanyById(companyId).then((res)=>{
       GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
         const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime() && item.free===true);
-
         setMainDates(predefDates);
         setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
       });
@@ -53,7 +54,6 @@ export function StepperComponent({handleClose}) {
   },[authUser.username,userId]);
   const [mainDates, setMainDates] = React.useState([]);
   const [equipment, setEquipment] = React.useState([]);
-  //const [company,setCompany]=React.useState({});
   const [dates,setDates]=React.useState([]);
 
   const [checked, setChecked] = useState([]);
@@ -78,7 +78,6 @@ export function StepperComponent({handleClose}) {
       toast.error("Please select equipment you want to use!");
       return;
     }
-    //console.log(Object.keys(selectedDate).length === 0);
     if(activeStep===1 && Object.keys(selectedDate).length === 0){
       toast.error("Please select a date!");
       return;
@@ -91,16 +90,15 @@ export function StepperComponent({handleClose}) {
         equipments: checked,
         companyAdminId: selectedDate.companyAdminId,
         dateTimeInMS: selectedDate.dateTimeInMs,
-        userId: userId
+        userId: userId,
+        pickedUp: false
       }
       if(validateDate(reservedDate)){
-        CreateReservedDateWithMail(reservedDate,'jovan.katanic204@gmail.com');
+        CreateReservedDateWithMail(reservedDate,email);
       
         const updateDate={ ...selectedDate, free: false };
         UpdatePredefineDate(updateDate);
-        console.log(updateDate);
-        
-        //UpdatePredefineDate()
+
         toast.success("Your reservation has been added!");
         handleClose();
       }else{
@@ -160,7 +158,7 @@ export function StepperComponent({handleClose}) {
   const formatDate=(milliseconds,duration)=>{
     const date=new Date(milliseconds);
     const endDate=new Date(milliseconds+duration*60000);
-
+    
     const hours = date.getHours();
     const minutes = date.getMinutes();
 
@@ -171,10 +169,10 @@ export function StepperComponent({handleClose}) {
     const timePart = `${padZero(hours)}:${padZero(minutes)}`;
     const endTimePart=`${padZero(endHours)}:${padZero(endMinutes)}`;
     
-    const month=date.getMonth();
-    const day=date.getDay();
+    const month=date.getMonth()+1;
+    const day=date.getDate();
     const year=date.getFullYear();
-
+    console.log(month);
 
     const datePart=`${padZero(month)}/${padZero(day)}/${year}`;
     return datePart+ ' ' + timePart + ' - ' +endTimePart ;
@@ -200,7 +198,7 @@ export function StepperComponent({handleClose}) {
       {activeStep === 2 &&
         <React.Fragment>
         <Typography sx={{ mt: 10, mb: 1,textAlign: 'center' }}>
-           <h1> All steps completed - you&apos;re finished </h1>
+            All steps completed - you&apos;re finished 
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
           <Box sx={{ flex: '1 1 auto' }} />
