@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import {useEffect, useState} from "react";
 import {GetUserByUsername} from "../../services/UserService";
 import authService from "../../services/auth.service";
-
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 
 export default function HomePageContainer() {
   function logOut() {
@@ -31,7 +31,7 @@ export default function HomePageContainer() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <MonitorHeartIcon />
           </IconButton>
           <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
           <span style={{ fontWeight: 'bold' }}>MediConnect</span>

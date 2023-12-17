@@ -18,7 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
+import { GetEquipmentByCompanyId, LowerQuantityOfEquipment } from '../../services/EquipmentService';
 import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
 import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
@@ -33,6 +33,7 @@ export function StepperComponent({handleClose,companyId}) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [userId,setUserId]=useState(0);
   const [email,setEmail]=useState("");
+  const [company,setCompany]=useState({});
   const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   useEffect(()=>{
     GetUserByUsername(authUser.username).then((res)=>{
@@ -41,9 +42,10 @@ export function StepperComponent({handleClose,companyId}) {
     });
 
     GetEquipmentByCompanyId(companyId).then((res)=>{
-      setEquipment(res.data);
+      setEquipment(res.data.filter(item=>item.quantity>=1));
     });
     GetCompanyById(companyId).then((res)=>{
+      setCompany(res.data);
       GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
         const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime() && item.free===true);
         setMainDates(predefDates);
@@ -91,13 +93,20 @@ export function StepperComponent({handleClose,companyId}) {
         companyAdminId: selectedDate.companyAdminId,
         dateTimeInMS: selectedDate.dateTimeInMs,
         userId: userId,
-        pickedUp: false
+        pickedUp: false,
+        companyId: company.id
       }
       if(validateDate(reservedDate)){
         CreateReservedDateWithMail(reservedDate,email);
       
+        
+
         const updateDate={ ...selectedDate, free: false };
         UpdatePredefineDate(updateDate);
+
+        checked.forEach(equipmentId => {
+          LowerQuantityOfEquipment(equipmentId);
+        });
 
         toast.success("Your reservation has been added!");
         handleClose();

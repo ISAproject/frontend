@@ -11,7 +11,7 @@ import theme from '../../styles/theme';
 import  { useState,useEffect } from 'react';
 import { GetUserByUsername } from '../../services/UserService';
 import authService from '../../services/auth.service.js';
-
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 export default function LoggedUserContainer() {
     const [user, setUser] = useState({});
     const authUser =  localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
@@ -50,7 +50,7 @@ export default function LoggedUserContainer() {
                 aria-label="menu"
                 sx={{ mr: 2 }}
               >
-                <MenuIcon />
+                <MonitorHeartIcon />
               </IconButton>
               <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
               <span style={{ fontWeight: 'bold' }}>MediConnect</span>

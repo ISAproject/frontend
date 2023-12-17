@@ -12,7 +12,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 function CompanyCard({ company }) {
     const companyDetailsLink = `/company/${company.id}/0`;
 
@@ -89,7 +89,7 @@ function AllCompaniesComponent() {
             aria-label="menu"
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <MonitorHeartIcon />
           </IconButton>
           <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
           <span style={{ fontWeight: 'bold' }}>MediConnect</span>

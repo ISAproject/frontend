@@ -49,7 +49,7 @@ import { findEquipmentByName, GetEquipments } from "../../services/EquipmentServ
 import StarIcon from '@mui/icons-material/Star';
 import '../equipmentSearchComponent/equipment-search-component.css';
 import ReserveEquipmentComponent from '../reserveEquipmentComponent/reserve-equipment-component';
-
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -406,7 +406,7 @@ function CompanyComponent() {
                         aria-label="menu"
                         sx={{ mr: 2 }}
                     >
-                        <MenuIcon />
+                        <MonitorHeartIcon />
                     </IconButton>
                     <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
                         <span style={{ fontWeight: 'bold' }}>MediConnect</span>

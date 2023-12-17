@@ -38,3 +38,7 @@ export const UpdateEquipment = (id, equipment) => {
 export const DeleteEquipment = (id) => {
     return axios.delete("http://localhost:8090/api/v1/equipment/" + id);
 }
+
+export const LowerQuantityOfEquipment = (id) => {
+    return axios.put("http://localhost:8090/api/v1/equipment/lowerQuantity/" + id);
+}
