@@ -17,6 +17,7 @@ import {Link, useParams} from "react-router-dom";
 //     Cell,
 // } from "@table-library/react-table-library/table";
 import { Button,TextField,Rating} from '@mui/material';
+import authService from "../../services/auth.service";
 
 //import { useTheme } from "@table-library/react-table-library/theme";
 
@@ -25,7 +26,10 @@ function formatMillisecondsToDate(milliseconds) {
     return date.toLocaleString('en-GB'); // Adjust the format based on your requirements
 
 }
-
+function logOut() {
+    window.location.href='/home';
+    authService.logout();
+}
 function CompanyCalendarComponent() {
     const [reservedDates, setReservedDates] = useState([]);
     const [timeRadio, setTimeRadio] = useState(0);
@@ -129,8 +133,7 @@ function CompanyCalendarComponent() {
                         <span style={{ fontWeight: 'bold' }}>MediConnect</span>
                     </Typography>
                     <Button color="accent" component={Link} to="/home">Home</Button>
-                    <Button color="accent">Login</Button>
-                    <Button color="accent">Register</Button>
+                    <Button color="accent" component={Link} onClick={logOut}>Logout</Button>
                 </Toolbar>
             </AppBar>
             <br></br>

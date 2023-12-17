@@ -15,7 +15,7 @@ const register = (data) => {
 }
 
 const profile = () => {
-    return http.get('/v1/user/username/' + localStorage.getItem('authUser').username);
+    return http.get('/v1/user/username/' + localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).username:null);
 }
 
 const logout = () => {
