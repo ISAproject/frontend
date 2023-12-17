@@ -25,7 +25,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { GetEquipmentByCompanyId } from '../../services/EquipmentService';
 import { Box } from '@mui/material';
-import { CreateReservedDate, GetAllReservedDates } from '../../services/ReservedDateService';
+import { CreateReservedDate, GetAllReservedDates, GetTrackingsByEquipmentId } from '../../services/ReservedDateService';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -48,6 +48,11 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { findEquipmentByName, GetEquipments } from "../../services/EquipmentService";
 import StarIcon from '@mui/icons-material/Star';
 import '../equipmentSearchComponent/equipment-search-component.css';
+import TrackChangesIcon from '@mui/icons-material/TrackChanges';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 
 const ITEM_HEIGHT = 48;
@@ -113,6 +118,8 @@ function CompanyComponent() {
     const [textboxValue, setTextboxValue] = useState('');
     const [ratingValue, setRatingValue] = useState(0);
     const [hover, setHover] = useState(-1);
+    const [open, setOpen] = useState(false);
+    const [trackingOrders, setTrackingOrders] = useState([]);
 
 
     useEffect(() => {
@@ -395,6 +402,23 @@ function CompanyComponent() {
         5: 'Excellent+',
     };
 
+    const handleClickOpen = async (equipmentId) => {
+        try {
+            const orders = await GetTrackingsByEquipmentId(equipmentId);
+
+            setTrackingOrders(orders.data);
+            console.log(orders.data)
+            setOpen(true);
+        } catch (error) {
+            console.error(error.message);
+        }
+
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <>
             <AppBar position="static" color='secondary'>
@@ -561,6 +585,7 @@ function CompanyComponent() {
                                                     <TableCell>Quantity</TableCell>
                                                     <TableCell></TableCell>
                                                     <TableCell></TableCell>
+                                                    <TableCell></TableCell>
                                                 </>
                                             ) : (<></>)}
                                         </TableRow>
@@ -622,10 +647,16 @@ function CompanyComponent() {
                                                                 <TableCell>{equipmentItem.quantity}</TableCell>
                                                                 <TableCell><EditIcon className='button-remove-equipment' onClick={() => handleEditEquipmentClick(equipmentItem)} /></TableCell>
                                                                 {existingReservedDates.findIndex(date => !date.pickedUp && date.equipments.includes(equipmentItem.id)) === -1 ? (
-                                                                    <TableCell><DeleteIcon className='button-remove-equipment' onClick={() => handleRemoveEquipmentClick(equipmentItem.id)}
-                                                                    /></TableCell>
-                                                                ) : (<TableCell></TableCell>)}
-
+                                                                    <>
+                                                                        <TableCell><DeleteIcon className='button-remove-equipment' onClick={() => handleRemoveEquipmentClick(equipmentItem.id)}
+                                                                        /></TableCell>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <TableCell></TableCell>
+                                                                    </>
+                                                                )}
+                                                                <TableCell><TrackChangesIcon className='button-remove-equipment' onClick={() => handleClickOpen(equipmentItem.id)} /></TableCell>
                                                             </>
                                                         ) : (<></>)}
                                                     </>
@@ -634,6 +665,29 @@ function CompanyComponent() {
 
                                             </TableRow>
                                         ))}
+
+                                        <Dialog open={open} onClose={handleClose} maxWidth='lg' fullWidth >
+                                            <DialogTitle>Tracking orders:</DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText>
+                                                    {trackingOrders.map(order => (
+                                                        <>
+                                                            <div key={order.orderId}>
+                                                                {formatMillisecondsToDate(order.dateTimeInMs)}<br />
+                                                                Buyer: {order.userName}<br />
+                                                                Delivering: {order.companyAdminName}<br />
+                                                                {order.pickedUp ? (
+                                                                    <>Picked up: Yes</>
+                                                                ):(
+                                                                    <>Picked up: No</>
+                                                                )}
+                                                            </div>
+                                                            <hr></hr>
+                                                        </>
+                                                    ))}
+                                                </DialogContentText>
+                                            </DialogContent>
+                                        </Dialog>
                                         {editMode ? (
                                             <>
                                                 <TableRow>
@@ -777,15 +831,15 @@ function CompanyComponent() {
                         <div style={{ width: '80vw', margin: 'auto' }}>
                             {editMode ? (
                                 <Stack spacing={2} direction="row">
-                                    <Button variant="contained" onClick={handleSaveClick} className='button-wrapper' color="secondary">
+                                    <Button variant="contained" onClick={handleSaveClick} className='button-wrapper mt-5' color="secondary">
                                         Save
                                     </Button>
-                                    <Button variant="outlined" onClick={handleCancelClick} className='button-cancel' color="secondary">
+                                    <Button variant="outlined" onClick={handleCancelClick} className='button-cancel mt-5' color="secondary">
                                         Cancel
                                     </Button>
                                 </Stack>
                             ) : (
-                                <Button variant="contained" onClick={handleEditClick} className='button-wrapper' color="secondary">
+                                <Button variant="contained" onClick={handleEditClick} className='button-wrapper mt-5' color="secondary">
                                     Edit
                                 </Button>
                             )}
