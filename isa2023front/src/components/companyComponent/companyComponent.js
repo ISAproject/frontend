@@ -863,9 +863,13 @@ function CompanyComponent() {
                                             </Button>
                                         </Stack>
                                     ) : (
+                                        <>
+                                        {companyData.administratorId.filter(adminId => adminId == user.id).length == 1 ?
                                         <Button variant="contained" onClick={handleEditClick} className='button-wrapper mt-5' color="secondary">
                                             Edit
                                         </Button>
+                                        : <></>}
+                                        </>
                                     )}
                                 </div>
                             ) : (
