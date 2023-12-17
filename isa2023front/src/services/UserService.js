@@ -26,3 +26,6 @@ export const GetLastUser=()=>{
 export const GetUserByUsername=(username)=>{
     return axios.get("http://localhost:8090/api/v1/user/username/"+username);
 }
+export const IsPasswordChange=(username)=>{
+    return axios.put("http://localhost:8090/api/v1/user/ispasschanged/"+username);
+}

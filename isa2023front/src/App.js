@@ -22,6 +22,7 @@ import ReserveEquipmentComponent from './components/reserveEquipmentComponent/re
 import StepperComponent from './components/reserveEquipmentComponent/stepper-component';
 import QRCodeEquipmentContainer from './containers/QRCodeEquipmentContainer.js/QRCodeEquipmentContainer';
 import CompanyCalendarContainer from "./containers/companyCallendarContainer/CompanyCalendarContainer";
+import ChangePasswordContainer from "./containers/ChangePasswordContainer/ChangePasswordContainer";
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -46,7 +47,7 @@ function App() {
           <Route path="/stepper" element={<StepperComponent/>}></Route>
           <Route path="/qrcode-equipment/:id" element={<QRCodeEquipmentContainer/>}></Route>
           <Route path="/company-calendar/:id" element={<CompanyCalendarContainer/>}></Route>
-          
+          <Route path="/changepassword" element={<ChangePasswordContainer/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

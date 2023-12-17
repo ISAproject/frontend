@@ -9,13 +9,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 import theme from '../../styles/theme';
 import  { useState,useEffect } from 'react';
-import { GetUserByUsername } from '../../services/UserService';
+import {GetUserByUsername, IsPasswordChange} from '../../services/UserService';
 import authService from '../../services/auth.service.js';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 export default function LoggedUserContainer() {
     const [user, setUser] = useState({});
     const authUser =  localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
-
+    const [isch, setIsch] = useState(false);
     useEffect(() => {
       console.log(authUser);
       if(!authUser)
@@ -23,6 +23,12 @@ export default function LoggedUserContainer() {
         GetUserByUsername(authUser?.username)
           .then(response => {
             setUser(response.data);
+            IsPasswordChange(response.data.username).then(res=>
+                {
+                    setIsch(res.data);
+                }
+
+            )
           })
           .catch(error => {
             console.log(error);
@@ -65,6 +71,17 @@ export default function LoggedUserContainer() {
           <>
             <h2 style={{ color: theme.palette.secondary.main }}>Page not found :/</h2>
           </>
+      }
+      {
+          (user && !isch)
+              ?
+              <>
+                  <Button component={Link} to="/changepassword">Change password</Button>
+              </>
+              :
+              <>
+
+              </>
       }
     </Box>
   );
