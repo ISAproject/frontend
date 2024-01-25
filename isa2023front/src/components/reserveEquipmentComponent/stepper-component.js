@@ -106,7 +106,7 @@ const handleOtherDates=()=>{
     }
     
     if(activeStep===steps.length - 1){
-      if(selectedOtherDate){
+      if(Object.keys(selectedOtherDate).length != 0){
         let reservedDate={
           duration: selectedOtherDate.duration,
           equipments: checked,
@@ -239,7 +239,7 @@ const handleOtherDates=()=>{
         userId: userId,
         id: 0,
         duration: time,
-        dateTimeInMS: i,//aaaaaaaaaaaa
+        dateTimeInMS: i,
         equipments: checked,
         pickedUp: false,
         companyId: companyId,

@@ -32,3 +32,7 @@ export const DeletePredefinedDate=(id, companyId)=>{
 
     return axios.delete("http://localhost:8090/api/v1/predefinedDate/" + id + "/" + companyId, options);
 }
+
+export const GetAllPredefinedDatesNoAuthorization=()=>{
+    return axios.get("http://localhost:8090/api/v1/predefinedDate");
+}

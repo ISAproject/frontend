@@ -30,8 +30,10 @@ export const GetTrackingsByEquipmentId = (id) => {
 
     return axios.get("http://localhost:8090/api/v1/reservedDate/trackingOrder/" + id, options);
 }
-export const GetReservedDatesByUserId = (userId) => {
-    return axios.get("http://localhost:8090/api/v1/reservedDate/reservedDates/"+userId);
+export const GetReservedDatesByUserId = (userId,flag) => {
+    if(flag)
+        return axios.get("http://localhost:8090/api/v1/reservedDate/reservedDates/"+userId+"/true");
+        return axios.get("http://localhost:8090/api/v1/reservedDate/reservedDates/"+userId+"/false");
 }
 export const GetByComapany=(companyId)=>{
 
@@ -46,4 +48,8 @@ export const GetByComapanyByMonth=(companyId,month,year)=>{
 }
 export const GetByComapanyByYear=(companyId,year)=>{
     return axios.get("http://localhost:8090/api/v1/reservedDate/yearly/"+companyId+"/"+year,options);
+}
+
+export const DeleteReservedDate=(reservedId)=>{
+    return axios.delete("http://localhost:8090/api/v1/reservedDate/deleteReservation/"+reservedId);
 }

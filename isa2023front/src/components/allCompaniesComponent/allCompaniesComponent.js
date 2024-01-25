@@ -59,6 +59,7 @@ function AllCompaniesComponent() {
     GetAllCompanies()
     .then((resComp) => {
       setCompanies(resComp.data);
+      
     })
     .catch((error) => {
       console.error('Error fetching companies:', error);
@@ -97,6 +98,56 @@ function AllCompaniesComponent() {
         console.log(error);
       });
   }
+  const [flagRating,setFlagRating]=useState(true);
+  const handleRatingSort=()=>{
+    let newCompanies;
+    if(flagRating){
+      newCompanies=[...companies].sort((a, b) => a.avgGrade - b.avgGrade);
+      setFlagRating(false);
+    }
+    else{
+      newCompanies=[...companies].sort((a, b) => b.avgGrade - a.avgGrade);
+      setFlagRating(true);
+    }
+    setFlagName(true);
+    setFlagState(true);
+
+    setCompanies(newCompanies);
+  }
+
+  const [flagName,setFlagName]=useState(true);
+  const handleNameSort=()=>{
+    let newCompanies;
+    if(flagName){
+      newCompanies=[...companies].sort((a, b) => a.name.localeCompare(b.name));
+      setFlagName(false);
+    }
+    else{
+      newCompanies=[...companies].sort((a, b) => b.name.localeCompare(a.name));
+      setFlagName(true);
+    }
+    setFlagRating(true);
+    setFlagState(true);
+
+    setCompanies(newCompanies);
+  }
+  const [flagState,setFlagState]=useState(true);
+  const handleStateSort=()=>{
+    let newCompanies;
+    if(flagState){
+      newCompanies=[...companies].sort((a, b) => a.address.localeCompare(b.address));
+      setFlagState(false);
+    }
+    else{
+      newCompanies=[...companies].sort((a, b) => b.address.localeCompare(a.address));
+      setFlagState(true);
+    }
+    setFlagRating(true);
+    setFlagName(true);
+
+    setCompanies(newCompanies);
+  }
+  
 
   function getLabelText(value) {
     return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
@@ -218,9 +269,16 @@ function AllCompaniesComponent() {
           </Box>
 
           <Button variant="contained" onClick={handleSearch} color='secondary'>Search</Button>
+          
         </Box>
+        
       </Box>
-
+      
+      <Box sx={{display:'flex',justifyContent:'space-evenly'}}>
+        <Button onClick={handleRatingSort}  color={flagRating ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Rating</Button>
+        <Button onClick={handleNameSort} color={flagName ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Name</Button>
+        <Button onClick={handleStateSort}  color={flagState ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Address</Button>
+      </Box>
       {companies.map((company) => (
         <CompanyCard key={company.id} company={company} />
       ))}
