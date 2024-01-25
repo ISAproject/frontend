@@ -23,17 +23,21 @@ import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
 import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
 import { ToastContainer, toast } from 'react-toastify';
+import TextField from '@mui/material/TextField';
 import 'react-toastify/dist/ReactToastify.css';
 import { GetUserByUsername } from '../../services/UserService';
 import './reserve-equipment-component.css';
 import { UpdatePredefineDate } from '../../services/PredefinedDatesService';
-const steps = ['Select equipment', 'Pick a date', 'Confirm'];
+import { GetAllReservedDates } from '../../services/ReservedDateService'; 
+
+const steps = ['Select equipment', 'Pick a date', 'Pick date (optional)','Confirm'];
 
 export function StepperComponent({handleClose,companyId}) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [userId,setUserId]=useState(0);
   const [email,setEmail]=useState("");
   const [company,setCompany]=useState({});
+  const [time,setTime]=useState(1);
   const authUser=localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   useEffect(()=>{
     GetUserByUsername(authUser.username).then((res)=>{
@@ -53,11 +57,18 @@ export function StepperComponent({handleClose,companyId}) {
       });
 
     });
+    //console.log(companyId)
+    GetAllReservedDates().then((res)=>{
+      setReservedDates(res.data.filter(item=>item.companyId==companyId && item.dateTimeInMS >= new Date().getTime()));
+    });
+        
   },[authUser.username,userId]);
+
+  const [reseredDates, setReservedDates] = React.useState([]);
   const [mainDates, setMainDates] = React.useState([]);
   const [equipment, setEquipment] = React.useState([]);
   const [dates,setDates]=React.useState([]);
-
+  const [otherDates,setOtherDates]=React.useState([]);
   const [checked, setChecked] = useState([]);
 
   const addEquipmentClick=(equipmentId) => (event) =>{
@@ -74,8 +85,13 @@ export function StepperComponent({handleClose,companyId}) {
     }
     return false;
   }
+const handleOtherDates=()=>{
+  setActiveStep((prevActiveStep) => prevActiveStep + 1);
+}
+
 
   const handleNext = () => {
+    //console.log(reseredDates)
     if(checked.length===0){
       toast.error("Please select equipment you want to use!");
       return;
@@ -84,8 +100,38 @@ export function StepperComponent({handleClose,companyId}) {
       toast.error("Please select a date!");
       return;
     }
+    if(activeStep===1){
+      setActiveStep((prevActiveStep) => prevActiveStep + 2);
+      return;
+    }
     
     if(activeStep===steps.length - 1){
+      if(selectedOtherDate){
+        let reservedDate={
+          duration: selectedOtherDate.duration,
+          equipments: checked,
+          companyAdminId: selectedOtherDate.companyAdminId,
+          dateTimeInMS: selectedOtherDate.dateTimeInMS,
+          userId: userId,
+          pickedUp: false,
+          companyId: company.id
+        }
+        console.log(reservedDate)
+        if(validateDate(reservedDate)){
+          console.log('works');
+          CreateReservedDateWithMail(reservedDate,email);
+  
+          checked.forEach(equipmentId => {
+            LowerQuantityOfEquipment(equipmentId);
+          });
+  
+          toast.success("Your reservation has been added!");
+          handleClose();
+        }else{
+          toast.error("Please select a date!");
+        }
+      }else{
+        console.log('bug');
       
       let reservedDate={
         duration: selectedDate.duration,
@@ -113,6 +159,7 @@ export function StepperComponent({handleClose,companyId}) {
       }else{
         toast.error("Please select a date!");
       }
+    }
       
     }else{
       setActiveStep((prevActiveStep) => prevActiveStep + 1); 
@@ -120,6 +167,10 @@ export function StepperComponent({handleClose,companyId}) {
   };
 
   const handleBack = () => {
+    if(activeStep===3){
+      setActiveStep((prevActiveStep) => prevActiveStep - 2);
+      return;
+    }
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     
   };
@@ -144,13 +195,27 @@ export function StepperComponent({handleClose,companyId}) {
     justifyContent: 'center',
     height:'5vh',
   });
+  const listItemOtherStyle = (date) => ({
+    background: selectedOtherDate.dateTimeInMS == date.dateTimeInMS ? '#2196F3' : 'transparent',
+    justifyContent: 'center',
+    height:'5vh',
+  });
+  const handleItemOtherClick=(date)=>{
+    setSelectedOtherDate(date);
+    console.log(date);
+  }
   const handleItemClick = (date) => {
     setSelectedDate(date);
     console.log(date);
   };
   const [selectedDate, setSelectedDate] = useState({});
-
+  const [selectedOtherDate, setSelectedOtherDate] = useState({});
   const [pickedDate, setPickedDate] = useState(null);
+  const [pickedOtherDate, setPickedOtherDate] = useState(null);
+
+  const handleDatepickerOtherDates=(date)=>{
+    setPickedOtherDate(date);
+  }
 
   const handleDatepicker=(date)=>{
     setSelectedDate({});
@@ -163,6 +228,45 @@ export function StepperComponent({handleClose,companyId}) {
     setDates(variable);
     
   }
+  const handleSearch=()=>{
+    //console.log(new Date(pickedOtherDate).getTime(),time)
+    setOtherDates([]);
+    const selectedDate=new Date(pickedOtherDate).getTime();
+    let i=selectedDate;
+    let j=0;
+    while(true){
+      let reservedDate={
+        userId: userId,
+        id: 0,
+        duration: time,
+        dateTimeInMS: i,//aaaaaaaaaaaa
+        equipments: checked,
+        pickedUp: false,
+        companyId: companyId,
+        companyAdminId: 0
+      }
+      let flag=true;
+      for (const element of reseredDates) {
+        if((element.dateTimeInMS <= i+time*60*1000 && element.dateTimeInMS+element.duration*60000 >= i) ||
+         (i <= element.dateTimeInMS+element.duration*60000 && i+time*60*1000 >= element.dateTimeInMS)){
+            flag=false;
+            break;
+         }
+      }
+      if(flag){
+        setOtherDates(prevDates => [...prevDates, reservedDate]);
+        j++;
+        if(j==24)break;
+      }
+
+
+      i+=60*60*1000;
+
+    }
+    console.log(reseredDates);
+
+  }
+  
 
   const formatDate=(milliseconds,duration)=>{
     const date=new Date(milliseconds);
@@ -186,7 +290,9 @@ export function StepperComponent({handleClose,companyId}) {
     const datePart=`${padZero(month)}/${padZero(day)}/${year}`;
     return datePart+ ' ' + timePart + ' - ' +endTimePart ;
   }
-
+  const handleDuration=(event)=>{
+    setTime(event.target.value);
+  }
   
   return (
 
@@ -204,7 +310,7 @@ export function StepperComponent({handleClose,companyId}) {
           );
         })}
       </Stepper>
-      {activeStep === 2 &&
+      {activeStep === 3 &&
         <React.Fragment>
         <Typography sx={{ mt: 10, mb: 1,textAlign: 'center' }}>
             All steps completed - you&apos;re finished 
@@ -270,6 +376,36 @@ export function StepperComponent({handleClose,companyId}) {
           </Box>  
         </React.Fragment>
     }
+    {activeStep === 2 &&
+        <React.Fragment>
+          <Box sx={{ mt: 10, mb: 1,flexDirection:'row',display: 'flex' ,justifyContent:'space-evenly',alignItems:'center',width:'100%'}}>
+          
+            <LocalizationProvider dateAdapter={AdapterDayjs} >
+                <DemoContainer components={['DatePicker']}>
+                    <DatePicker label="Pick a date"
+                    onChange={handleDatepickerOtherDates} 
+                    value={pickedOtherDate}
+                    sx={{ width: '30vw' }}
+                    />
+                </DemoContainer>
+            </LocalizationProvider>
+            <TextField  color='secondary'  label="Duration" variant="outlined" onChange={handleDuration} value={time}/>
+            <Button onClick={handleSearch}>
+             Search
+            </Button>
+          </Box>
+          <List sx={listStyle}>
+                {otherDates.map((date, index) => (
+                    <ListItem key={date.dateTimeInMS} button 
+                    onClick={() => handleItemOtherClick(date)}
+                    style={listItemOtherStyle(date)}>
+                        {formatDate(date.dateTimeInMS,date.duration)}
+                    </ListItem>
+                    
+                ))}
+            </List>
+        </React.Fragment>
+      }
     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
             <Button
             color="inherit"
@@ -282,7 +418,11 @@ export function StepperComponent({handleClose,companyId}) {
             
             <Box sx={{ flex: '1 1 auto' }} />
             
-            
+            {activeStep === 1 ? (
+              <Button onClick={handleOtherDates}>
+                Find other dates
+              </Button>
+            ) : null} 
 
         <Button onClick={handleNext}>
           {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
