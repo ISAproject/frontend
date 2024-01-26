@@ -10,8 +10,10 @@ function UserInfoComponent({user}) {
           display: 'flex',
           flexDirection:'column',
           alignItems: 'center',
+          padding:"20px"
 
       }}>
+        <Box sx={{fontSize:"2.5vh"}}>Profile:</Box>
         <TextField id="outlined-read-only-input" label="Username" variant="outlined" color="secondary" value={user.username} margin="normal" focused/>
         <TextField id="outlined-read-only-input" label="Name" variant="outlined" color="secondary" value={user.first_name + " " +user.last_name} margin="normal" focused/>
         <TextField id="outlined-read-only-input" label="Address" variant="outlined" color="secondary" value={user.state + ", " +user.city} margin="normal" focused/>

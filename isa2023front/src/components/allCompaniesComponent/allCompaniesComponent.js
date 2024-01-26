@@ -15,7 +15,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import authService from "../../services/auth.service";
 import { GetUserByUsername } from '../../services/UserService';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 function CompanyCard({ company }) {
   const companyDetailsLink = `/company/${company.id}`;
@@ -99,7 +100,11 @@ function AllCompaniesComponent() {
       });
   }
   const [flagRating,setFlagRating]=useState(true);
+  const [ratingClicked,setRatingClicked]=useState(false);
   const handleRatingSort=()=>{
+    setStateClicked(false);
+    setNameClicked(false);
+    setRatingClicked(true);
     let newCompanies;
     if(flagRating){
       newCompanies=[...companies].sort((a, b) => a.avgGrade - b.avgGrade);
@@ -116,7 +121,12 @@ function AllCompaniesComponent() {
   }
 
   const [flagName,setFlagName]=useState(true);
+  const [nameClicked,setNameClicked]=useState(false);
   const handleNameSort=()=>{
+    setStateClicked(false);
+    setNameClicked(true);
+    setRatingClicked(false);
+
     let newCompanies;
     if(flagName){
       newCompanies=[...companies].sort((a, b) => a.name.localeCompare(b.name));
@@ -132,7 +142,11 @@ function AllCompaniesComponent() {
     setCompanies(newCompanies);
   }
   const [flagState,setFlagState]=useState(true);
+  const [stateClicked,setStateClicked]=useState(false);
   const handleStateSort=()=>{
+    setStateClicked(true);
+    setNameClicked(false);
+    setRatingClicked(false);
     let newCompanies;
     if(flagState){
       newCompanies=[...companies].sort((a, b) => a.address.localeCompare(b.address));
@@ -275,9 +289,9 @@ function AllCompaniesComponent() {
       </Box>
       
       <Box sx={{display:'flex',justifyContent:'space-evenly'}}>
-        <Button onClick={handleRatingSort}  color={flagRating ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Rating</Button>
-        <Button onClick={handleNameSort} color={flagName ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Name</Button>
-        <Button onClick={handleStateSort}  color={flagState ? "accent" : "secondary"} variant='contained' sx={{width:'16vw'}}>Address</Button>
+        <Button onClick={handleRatingSort}  color={ratingClicked ?"secondary" : "accent"} variant='contained' sx={{width:'16vw'}}>Rating&nbsp; {flagRating?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
+        <Button onClick={handleNameSort} color={nameClicked ? "secondary" : "accent"} variant='contained' sx={{width:'16vw'}}>Name&nbsp;{flagName?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
+        <Button onClick={handleStateSort}  color={stateClicked ? "secondary" : "accent"} variant='contained' sx={{width:'16vw'}}>Address&nbsp;{flagState?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
       </Box>
       {companies.map((company) => (
         <CompanyCard key={company.id} company={company} />

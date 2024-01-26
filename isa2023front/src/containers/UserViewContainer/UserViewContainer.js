@@ -13,6 +13,8 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import authService from "../../services/auth.service";
+import UserQrCodeComponent from "../../components/userQrCodesComponent/userQrCodesComponent";
+
 function UserViewContainer() {
   const authUser = localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   let user = {
@@ -87,24 +89,27 @@ function UserViewContainer() {
       </Box>
       {authUser
         ?
-        <Box sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100vw",
-          padding: "10vh"
-        }}>
-          <Box>
-            <UserInfoComponent user={userData} />
-            <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
+        <Box>
+          <Box sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100vw",
+            padding: "10vh"
+          }}>
+              <Box>
+                <UserInfoComponent user={userData} />
+                <UserUpdateComponent userInfoFunction={handleUserInfo} userId={userId} />
+              </Box>
+              <Box>
+              
+                <UserReservationsComponent userId={userId} flag={false}/>
+              </Box>
+              <Box>
+                
+                <UserReservationsComponent userId={userId} flag={true}/>
+              </Box>
           </Box>
-          <Box>
-          <Box sx={{alignContent:"center",display:"flex",justifyContent:"center",fontSize:"20px"}}>Pending orders</Box>
-            <UserReservationsComponent userId={userId} flag={false}/>
-          </Box>
-          <Box>
-            <Box sx={{alignContent:"center",display:"flex",justifyContent:"center",fontSize:"20px"}}>Finished orders</Box>
-            <UserReservationsComponent userId={userId} flag={true}/>
-          </Box>
+          <UserQrCodeComponent userId={userId}/>
         </Box>
         :
         <div>

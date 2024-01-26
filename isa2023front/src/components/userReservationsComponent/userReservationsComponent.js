@@ -12,6 +12,8 @@ import Button from '@mui/material/Button';
 import { ToastContainer, toast } from 'react-toastify';
 import {GetAllPredefinedDates} from "../../services/PredefinedDateService";
 import {UpdatePredefineDate} from "../../services/PredefinedDatesService";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 function UserReservationsComponent({userId,flag}) {
     useEffect(()=>{
         if(userId==0)return;
@@ -107,10 +109,12 @@ function UserReservationsComponent({userId,flag}) {
     
     return (
         <React.Fragment>
-        <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }} >
+        <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper',minWidth:"500px" }} >
+            {flag?<Box sx={{alignContent:"center",display:"flex",justifyContent:"center",fontSize:"20px",mb:"20px"}}>Finished orders</Box>:
+            <Box sx={{alignContent:"center",display:"flex",justifyContent:"center",fontSize:"20px",mb:"20px"}}>Pending orders</Box>}
             <Box sx={{display:"flex",justifyContent:"space-evenly",mb:"4px"}}>
-                <Button color={dateClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'5vw'}} onClick={handleSortByDate}>Date</Button>
-                <Button color={durationClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'5vw'}} onClick={handleSortByDuration}>Duration</Button>
+                <Button color={dateClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'7vw'}} onClick={handleSortByDate}>Date&nbsp; {dateFlag?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
+                <Button color={durationClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'7vw'}} onClick={handleSortByDuration}>Duration&nbsp; {durationFlag?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
             </Box>
             <TableContainer component={Paper} sx={{ maxWidth: '100%',minHeight:'40vh' }}>
                 <Table>
