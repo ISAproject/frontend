@@ -71,10 +71,47 @@ function UserReservationsComponent({userId,flag}) {
             }
             
         });
-    }  
+    } 
+    
+    const [dateClicked,setDateClicked] = useState(false);
+    const [durationClicked,setDurationClicked] = useState(false);
+
+    const [dateFlag,setDateFlag] = useState(false);
+    const [durationFlag,setDurationFlag] = useState(false);
+
+    const handleSortByDate=()=>{
+        setDateClicked(true);
+        setDurationClicked(false);
+        if(dateFlag){
+            setDateFlag(false);
+            setReservedDates([...reservedDates].sort((a,b)=>a.dateTimeInMS-b.dateTimeInMS));
+        }else{
+            setDateFlag(true);
+            setReservedDates([...reservedDates].sort((a,b)=>b.dateTimeInMS-a.dateTimeInMS));
+        }
+        
+
+    }
+    const handleSortByDuration=()=>{
+        
+        setDateClicked(false);
+        setDurationClicked(true);
+        if(durationFlag){
+            setDurationFlag(false);
+            setReservedDates([...reservedDates].sort((a,b)=>a.duration-b.duration));
+        }else{
+            setDurationFlag(true);
+            setReservedDates([...reservedDates].sort((a,b)=>b.duration-a.duration));
+        }
+    }
+    
     return (
         <React.Fragment>
         <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }} >
+            <Box sx={{display:"flex",justifyContent:"space-evenly",mb:"4px"}}>
+                <Button color={dateClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'5vw'}} onClick={handleSortByDate}>Date</Button>
+                <Button color={durationClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'5vw'}} onClick={handleSortByDuration}>Duration</Button>
+            </Box>
             <TableContainer component={Paper} sx={{ maxWidth: '100%',minHeight:'40vh' }}>
                 <Table>
                     <TableHead>
