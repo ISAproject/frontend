@@ -129,12 +129,24 @@ function AllCompanyOrdersComponent() {
                                     <TableCell>{order.companyAdminName}</TableCell>
                                     <TableCell>{formatMillisecondsToDate(order.dateTimeInMs)}</TableCell>
                                     <TableCell>{order.duration}min</TableCell>
-                                    <TableCell>
-                                        {order.equipmentNames.map((name, index) => (
-                                            <>
-                                            <Chip key={index} label={name} sx={{marginBottom: '10px'}}/><br/>
-                                            </>
-                                        ))}
+                                    <TableCell sx={{padding: '0px'}}>
+                                        {order.equipmentNames.length > 1 ?
+                                        <>
+                                        <Table size="small" >
+                                            <TableBody >
+                                                {order.equipmentNames.map((name, index) => (
+                                                    <TableRow key={index} >
+                                                        <TableCell >{name}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                        </>
+                                        :
+                                        <>
+                                            <span className='ps-3'>{order.equipmentNames}</span>
+                                        </>
+                                        }
                                     </TableCell>
                                     <TableCell>{order.pickedUp}</TableCell>
 
