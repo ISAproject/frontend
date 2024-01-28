@@ -42,3 +42,14 @@ export const UpdateCompanyAdmin = (id, user) =>{
 export const IsPasswordChange=(username)=>{
     return axios.put("http://localhost:8090/api/v1/user/ispasschanged/"+username);
 }
+
+export const GetUsersWithOrdersByComapny = (companyId) =>{
+    const headers = {
+        'Authorization': 'Bearer '+(localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.get("http://localhost:8090/api/v1/user/usersWithOrders/" + companyId, options)
+}

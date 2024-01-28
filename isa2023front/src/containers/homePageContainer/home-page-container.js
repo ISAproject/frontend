@@ -19,6 +19,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import ReserveEquipmentComponent from '../../components/reserveEquipmentComponent/reserve-equipment-component';
 import { GetAllCompanies } from "../../services/CompanyService";
+import usersImage from '../../images/users.png';
+import equipmentImage from '../../images/equipment.jpg';
+import calendarImage from '../../images/calendar.jpg';
+import reserveDateImage from '../../images/reserveDate.jpg';
+import profileImage from '../../images/profile.jpg';
 
 
 export default function HomePageContainer() {
@@ -98,13 +103,13 @@ export default function HomePageContainer() {
           <div className='d-flex flex-wrap justify-content-center mt-5'>
             <Card sx={{ maxWidth: 345, width: '100%', marginBottom: '10px', marginRight: '10px' }}>
               <CardMedia
-                sx={{ height: 140 }}
-                image="../../images/users.png"
+                sx={{ height: 210 }}
+                image={usersImage}
                 title="Green Iguana"
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  Korisnici
+                  Korisnici i rezervacije
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Spisak svih registrovanih korisnika koji su rezervisali opremu u firmi i sve rezervacije
@@ -117,11 +122,11 @@ export default function HomePageContainer() {
 
             <Card sx={{ maxWidth: 345, width: '100%', marginBottom: '10px' , marginRight: '10px'}}>
               <CardMedia
-                sx={{ height: 140 }}
-                image="../../images/equipment.jpg"
+                sx={{ height: 210 }}
+                image={equipmentImage}
                 title="Green Iguana"
               >
-                <img src="../../images/equipment.jpg" />
+                <img src="../images/equipment.jpg" />
               </CardMedia>
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
@@ -138,8 +143,8 @@ export default function HomePageContainer() {
 
             <Card sx={{ maxWidth: 345, width: '100%', marginBottom: '10px', marginRight: '10px'}}>
               <CardMedia
-                sx={{ height: 140 }}
-                image="../../images/users.png"
+                sx={{ height: 210 }}
+                image={calendarImage}
                 title="Green Iguana"
               />
               <CardContent>
@@ -157,8 +162,8 @@ export default function HomePageContainer() {
 
             <Card sx={{ maxWidth: 345, width: '100%', marginBottom: '10px', marginRight: '10px' }}>
               <CardMedia
-                sx={{ height: 140 }}
-                image="../../images/users.png"
+                sx={{ height: 210 }}
+                image={reserveDateImage}
                 title="Green Iguana"
               />
               <CardContent>
@@ -176,8 +181,8 @@ export default function HomePageContainer() {
 
             <Card sx={{ maxWidth: 345, width: '100%', marginBottom: '10px', marginRight: '10px' }}>
               <CardMedia
-                sx={{ height: 140 }}
-                image="../../images/users.png"
+                sx={{ height: 210 }}
+                image={profileImage}
                 title="Green Iguana"
               />
               <CardContent>
