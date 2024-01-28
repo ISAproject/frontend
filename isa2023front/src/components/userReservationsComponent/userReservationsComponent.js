@@ -14,6 +14,12 @@ import {GetAllPredefinedDates} from "../../services/PredefinedDateService";
 import {UpdatePredefineDate} from "../../services/PredefinedDatesService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import Slide from '@mui/material/Slide';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 function UserReservationsComponent({userId,flag}) {
     useEffect(()=>{
         if(userId==0)return;
@@ -24,6 +30,11 @@ function UserReservationsComponent({userId,flag}) {
         
       },[userId]);
     const [reservedDates,setReservedDates] = useState([]);
+    const [open, setOpen] = React.useState(false);
+
+    const Transition = React.forwardRef(function Transition(props, ref) {
+        return <Slide direction="up" ref={ref} {...props} />;
+      });
 
 
     const formatDate=(milliseconds,duration)=>{
@@ -106,6 +117,9 @@ function UserReservationsComponent({userId,flag}) {
             setReservedDates([...reservedDates].sort((a,b)=>b.duration-a.duration));
         }
     }
+    const handleClose = () => {
+        setOpen(false);
+      };
     
     return (
         <React.Fragment>
@@ -150,6 +164,26 @@ function UserReservationsComponent({userId,flag}) {
         draggable={false}
         pauseOnHover={false}
         theme="colored"/>
+
+        <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+        >
+        <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            You tried to cancel an order that should arrive in less than 24 hours, if you proceed you will get additional penalty.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel Order</Button>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
     </React.Fragment>
     );
   }
