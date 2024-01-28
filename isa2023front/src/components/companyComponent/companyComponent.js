@@ -58,6 +58,7 @@ import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import { GetUserByUsername } from "../../services/UserService"
 import authService from "../../services/auth.service";
 import UserCreateContractComponent from '../userCreateContractComponent/userCreateContractComponent';
+import {GetContractByUserId} from '../../services/ContractService';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -126,7 +127,9 @@ function CompanyComponent() {
     const [open, setOpen] = useState(false);
     const [trackingOrders, setTrackingOrders] = useState([]);
 
+    
     useEffect(() => {
+        
         const fetchData = async () => {
             try {
                 if (!authUser)
