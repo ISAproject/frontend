@@ -21,7 +21,14 @@ export const findEquipmentByComapany = (companyId) => {
     return axios.get("http://localhost:8090/api/v1/equipment/searchbycompany/" + companyId);
 }
 export const findEquipmentById = (id) => {
-    return axios.get("http://localhost:8090/api/v1/equipment/" + id);
+    const headers = {
+        'Authorization': 'Bearer ' + (localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null)
+    };
+    const options = {
+        headers: headers,
+    };
+
+    return axios.get("http://localhost:8090/api/v1/equipment/" + id, options);
 }
 export const GetEquipmentByCompanyId = (companyId) => {
     const headers = {
