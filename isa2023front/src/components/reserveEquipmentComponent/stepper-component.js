@@ -140,8 +140,6 @@ const handleOtherDates=()=>{
           toast.error("Please select a date!");
         }
       }else{
-        
-      
       let reservedDate={
         duration: selectedDate.duration,
         equipments: checked,

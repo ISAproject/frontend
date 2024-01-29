@@ -8,8 +8,13 @@ export const GetContracts=()=>{
 }
 
 export const GetContractByUserId=(userId)=>{
-    return axios.get("http://localhost:8090/api/v1/contract/"+userId);
+    return axios.get("http://localhost:8090/api/v1/contract/getByUserId/"+userId);
 }
+
+export const GetContractByCompanyId=(companyId)=>{
+    return axios.get("http://localhost:8090/api/v1/contract/getByCompanyId/"+companyId);
+}
+
 
 export const DeleteContractById=(id)=>{
     return axios.delete("http://localhost:8090/api/v1/contract/"+id);

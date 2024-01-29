@@ -59,6 +59,7 @@ import { GetUserByUsername } from "../../services/UserService"
 import authService from "../../services/auth.service";
 import UserCreateContractComponent from '../userCreateContractComponent/userCreateContractComponent';
 import {GetContractByUserId} from '../../services/ContractService';
+import TrackingContractComponent from '../trackingContractComponent/trackingContractComponent';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -878,7 +879,7 @@ function CompanyComponent() {
                                     )}
                                 </div>
                             ) : (
-                                <div><ReserveEquipmentComponent companyId={id} /><UserCreateContractComponent companyId={id}/></div>
+                                <div><ReserveEquipmentComponent companyId={id} /><UserCreateContractComponent companyId={id}/><TrackingContractComponent companyId={id}/></div>
                             )}
                         </Stack>
                     </div>
