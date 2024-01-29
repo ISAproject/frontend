@@ -25,13 +25,12 @@ import { GetUserById, UpdateUser, GetUsersWithOrdersByComapny } from '../../serv
 import { findEquipmentById, UpdateEquipment} from '../../services/EquipmentService';
 
 
-function AllCompanyOrdersComponent() {
+function OrdersInformationComponent() {
     const [user, setUser] = useState({})
     const authUser = localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
 
     const { id } = useParams();
     const [orders, setOrders] = useState([]);
-    const [usersWithOrders, setUsersWithOrders] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,11 +40,9 @@ function AllCompanyOrdersComponent() {
 
                 const userRes = await GetUserByUsername(authUser?.username);
                 const ordersRes = await GetReservedDatesByCompanyId(id);
-                const usersWithOrdersRes = await GetUsersWithOrdersByComapny(id);
 
                 setUser(userRes.data);
                 processOrders(ordersRes);
-                setUsersWithOrders(usersWithOrdersRes.data);
             }
             catch (error) {
                 console.error('Error fetching data:', error);
@@ -129,11 +126,6 @@ function AllCompanyOrdersComponent() {
     function filterTables(selectedOrder) {
         var filteredorders = orders.filter(o => o.id != selectedOrder.id);
         setOrders(filteredorders);
-
-        if (!filteredorders.find(o => o.userId == selectedOrder.userId)) {
-            var filteredUsers = usersWithOrders.filter(u => u.id != selectedOrder.userId);
-            setUsersWithOrders(filteredUsers);
-        }
     }
 
     const decreaseEquipmentQuantity = async (selectedOrder) =>{
@@ -231,39 +223,9 @@ function AllCompanyOrdersComponent() {
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer><br /><br />
-            <h2>Users that made reservations at this company</h2><br />
-            <TableContainer component={Paper} sx={{ maxWidth: '80vw', margin: 'auto' }}>
-                <Table>
-                    <TableHead>
-                        <TableRow sx={{ backgroundColor: "#609577" }}>
-                            <TableCell sx={{ color: "white" }}>Name</TableCell>
-                            <TableCell sx={{ color: "white" }}>Last name</TableCell>
-                            <TableCell sx={{ color: "white" }}>Email</TableCell>
-                            <TableCell sx={{ color: "white" }}>Penalty points</TableCell>
-                            <TableCell sx={{ color: "white" }}>Tel. number</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {usersWithOrders.map((user, index) => (
-                            <>
-
-                                <TableRow key={user.id}>
-
-                                    <TableCell>{user.first_name}</TableCell>
-                                    <TableCell>{user.last_name}</TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.penaltyPoints}</TableCell>
-                                    <TableCell>{user.tel_number}</TableCell>
-
-                                </TableRow>
-                            </>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer><br />
+            </TableContainer>
         </>
     )
 }
 
-export default AllCompanyOrdersComponent;
+export default OrdersInformationComponent;
