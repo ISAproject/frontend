@@ -57,7 +57,8 @@ import ReserveEquipmentComponent from '../reserveEquipmentComponent/reserve-equi
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import { GetUserByUsername } from "../../services/UserService"
 import authService from "../../services/auth.service";
-
+import UserCreateContractComponent from '../userCreateContractComponent/userCreateContractComponent';
+import {GetContractByUserId} from '../../services/ContractService';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -126,7 +127,9 @@ function CompanyComponent() {
     const [open, setOpen] = useState(false);
     const [trackingOrders, setTrackingOrders] = useState([]);
 
+    
     useEffect(() => {
+        
         const fetchData = async () => {
             try {
                 if (!authUser)
@@ -465,6 +468,7 @@ function CompanyComponent() {
                         </AppBar>
                     </Box>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10vh' }}>
+                        
                         <Stack spacing={2} direction="column">
                             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '90vw' }}>
                                 <TableContainer component={Paper} sx={{ maxWidth: '80vw', margin: 'auto' }}>
@@ -874,7 +878,7 @@ function CompanyComponent() {
                                     )}
                                 </div>
                             ) : (
-                                <div><ReserveEquipmentComponent companyId={id} /></div>
+                                <div><ReserveEquipmentComponent companyId={id} /><UserCreateContractComponent companyId={id}/></div>
                             )}
                         </Stack>
                     </div>
