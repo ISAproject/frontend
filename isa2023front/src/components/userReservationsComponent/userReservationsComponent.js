@@ -20,6 +20,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import CampaignIcon from '@mui/icons-material/Campaign';
 function UserReservationsComponent({userId,flag}) {
     useEffect(()=>{
         if(userId==0)return;
@@ -31,6 +32,7 @@ function UserReservationsComponent({userId,flag}) {
       },[userId]);
     const [reservedDates,setReservedDates] = useState([]);
     const [open, setOpen] = React.useState(false);
+    const [clickedDate, setClickedDate] = useState(null);
 
     const Transition = React.forwardRef(function Transition(props, ref) {
         return <Slide direction="up" ref={ref} {...props} />;
@@ -62,29 +64,39 @@ function UserReservationsComponent({userId,flag}) {
     
     const handleCancel=(date)=>{
         if(new Date().getTime()+24*60*60*1000>=date.dateTimeInMS){
-            toast.error("You cant cancel reservetion 24 hours before it starts!");
+            setClickedDate(date);
+            setOpen(true);
             return;
         }
         // console.log(GetAllPredefinedDates());
         // console.log(date);
-        
-        DeleteReservedDate(date.id).then(()=>{
-            setReservedDates([...reservedDates].filter(item=>item.id!=date.id));
-            if(date.companyAdminId!=0){
-                GetAllPredefinedDates().then((res)=>{
-                    let object=res.data.filter(item=>item.companyAdminId==date.companyAdminId && item.dateTimeInMs==date.dateTimeInMS && item.duration==date.duration)[0];
-                    object.free=true;
-                    UpdatePredefineDate(object).then(()=>{
-                        console.log('works');
-                        toast.success("Your reservation has been deleted!");
+        cancelDate(date);
+    }
+
+    const cancelDate = (date) => {
+        if(date && open){
+            DeleteReservedDate(date.id).then(()=>{
+                setReservedDates([...reservedDates].filter(item=>item.id!=date.id));
+                if(date.companyAdminId!=0){
+                    GetAllPredefinedDates().then((res)=>{
+                        let object=res.data.filter(item=>item.companyAdminId==date.companyAdminId && item.dateTimeInMs==date.dateTimeInMS && item.duration==date.duration)[0];
+                        object.free=true;
+                        UpdatePredefineDate(object).then(()=>{
+                            console.log('works');
+                            toast.success("Your reservation has been deleted!");
+                            setClickedDate(null);
+                            setOpen(false);
+                        });
                     });
-                });
-            }else{
-                toast.success("Your reservation has been deleted!");
-            }
-            
-        });
-    } 
+                }else{
+                    toast.success("Your reservation has been deleted!");
+                    setClickedDate(null);
+                    setOpen(false);
+                }
+                
+            });
+        }
+    }
     
     const [dateClicked,setDateClicked] = useState(false);
     const [durationClicked,setDurationClicked] = useState(false);
@@ -118,6 +130,7 @@ function UserReservationsComponent({userId,flag}) {
         }
     }
     const handleClose = () => {
+        setClickedDate(null);
         setOpen(false);
       };
     
@@ -167,20 +180,19 @@ function UserReservationsComponent({userId,flag}) {
 
         <Dialog
         open={open}
-        TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
         >
-        <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle><CampaignIcon fontSize="large"/></DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             You tried to cancel an order that should arrive in less than 24 hours, if you proceed you will get additional penalty.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel Order</Button>
-          <Button onClick={handleClose}>Close</Button>
+          <Button color="secondary" onClick={()=>cancelDate(clickedDate)}>Cancel Order</Button>
+          <Button color="secondary" onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
 
