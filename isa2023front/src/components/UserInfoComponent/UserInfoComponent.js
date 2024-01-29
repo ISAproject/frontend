@@ -19,6 +19,7 @@ function UserInfoComponent({user}) {
         <TextField id="outlined-read-only-input" label="Address" variant="outlined" color="secondary" value={user.state + ", " +user.city} margin="normal" focused/>
         <TextField id="outlined-read-only-input" label="Phone" variant="outlined" color="secondary" value={user.tel_number} margin="normal" focused/>
         <TextField id="outlined-read-only-input" label="Occupation" variant="outlined" color="secondary" value={user.occupation} margin="normal" focused/>
+        <TextField id="outlined-read-only-input" label="Penalty points" variant="outlined" color="secondary" value={user.penaltyPoints} margin="normal" focused/>
       </Box>
     );
   }

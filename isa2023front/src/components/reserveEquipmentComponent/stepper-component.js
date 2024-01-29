@@ -21,7 +21,7 @@ import ListItem from '@mui/material/ListItem';
 import { GetEquipmentByCompanyId, LowerQuantityOfEquipment } from '../../services/EquipmentService';
 import { GetCompanyById } from '../../services/CompanyService';
 import { GetPredefinedDates } from '../../services/PredefinedDatesService';
-import { CreateReservedDateWithMail } from '../../services/ReservedDateService';
+import { CreateReservedDateForMail,SendMailReservation } from '../../services/ReservedDateService';
 import { ToastContainer, toast } from 'react-toastify';
 import TextField from '@mui/material/TextField';
 import 'react-toastify/dist/ReactToastify.css';
@@ -51,6 +51,7 @@ export function StepperComponent({handleClose,companyId}) {
     GetCompanyById(companyId).then((res)=>{
       setCompany(res.data);
       GetPredefinedDates(res.data.predefinedDatesId).then((result)=>{
+        console.log(result.data);
         const predefDates=result.data.filter(item=>item.dateTimeInMs >= new Date().getTime() && item.free===true);
         setMainDates(predefDates);
         setDates(predefDates.sort((a, b) => a.dateTimeInMs - b.dateTimeInMs).slice(0, 5));
@@ -119,19 +120,27 @@ const handleOtherDates=()=>{
         console.log(reservedDate)
         if(validateDate(reservedDate)){
           console.log('works');
-          CreateReservedDateWithMail(reservedDate,email);
-  
-          checked.forEach(equipmentId => {
-            LowerQuantityOfEquipment(equipmentId);
+          CreateReservedDateForMail(reservedDate,email).then((res)=>{
+            if(res.data==null){
+              toast.error("There was an error while trying to make reservation!");
+              return;
+            }
+            reservedDate.id=res.data.id;
+            SendMailReservation(reservedDate,email);
+            checked.forEach(equipmentId => {
+              LowerQuantityOfEquipment(equipmentId);
+            });
+    
+            toast.success("Your reservation has been added!");
+            
           });
-  
-          toast.success("Your reservation has been added!");
           handleClose();
+          
         }else{
           toast.error("Please select a date!");
         }
       }else{
-        console.log('bug');
+        
       
       let reservedDate={
         duration: selectedDate.duration,
@@ -143,19 +152,26 @@ const handleOtherDates=()=>{
         companyId: company.id
       }
       if(validateDate(reservedDate)){
-        CreateReservedDateWithMail(reservedDate,email);
-      
-        
-
-        const updateDate={ ...selectedDate, free: false };
-        UpdatePredefineDate(updateDate);
-
-        checked.forEach(equipmentId => {
-          LowerQuantityOfEquipment(equipmentId);
+        CreateReservedDateForMail(reservedDate,email).then((res)=>{
+          if(res.data==null){
+            toast.error("There was an error while trying to make reservation!");
+            return;
+          }
+          reservedDate.id=res.data.id;
+          SendMailReservation(reservedDate,email);
+          
+          const updateDate={ ...selectedDate, free: false };
+          UpdatePredefineDate(updateDate);
+  
+          checked.forEach(equipmentId => {
+            LowerQuantityOfEquipment(equipmentId);
+          });
+  
+          toast.success("Your reservation has been added!");
+          
         });
-
-        toast.success("Your reservation has been added!");
         handleClose();
+        
       }else{
         toast.error("Please select a date!");
       }
@@ -231,7 +247,16 @@ const handleOtherDates=()=>{
   const handleSearch=()=>{
     //console.log(new Date(pickedOtherDate).getTime(),time)
     setOtherDates([]);
+    
     const selectedDate=new Date(pickedOtherDate).getTime();
+    console.log(new Date().getTime(),selectedDate)
+    if(selectedDate<=new Date().getTime()){
+      if(!toast.isActive(7))
+        toast.warning("Please select a future date",{
+          toastId:7
+        });
+      return;  
+    }
     let i=selectedDate;
     let j=0;
     while(true){
@@ -362,7 +387,7 @@ const handleOtherDates=()=>{
                     sx={{ width: '100%' }}/>
                 </DemoContainer>
             </LocalizationProvider>
-            
+            {dates.length<=0?<Box sx={{display:'flex',justifyContent:'center',alignItems:'center',alignContent:'center',height:'80%',fontSize:'30px'}}>No predefined dates! Please select other dates.</Box>:
             <List sx={listStyle}>
                 {dates.map((date, index) => (
                     <ListItem key={date.id} button 
@@ -372,7 +397,7 @@ const handleOtherDates=()=>{
                     </ListItem>
                     
                 ))}
-            </List>
+            </List>}
           </Box>  
         </React.Fragment>
     }
