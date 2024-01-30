@@ -285,7 +285,7 @@ function OrdersInformationComponent() {
                                             sx={{ backgroundColor: "#c5ab85" }}
                                             onClick={() => handlePickedUpClick(order)}
                                             disabled={!(order.dateTimeInMs < Date.now() && Date.now() <= order.dateTimeInMs + order.duration * 60000)}
-                                            
+
                                         >
                                             <AiOutlineCheck />
                                         </Button>
@@ -297,6 +297,21 @@ function OrdersInformationComponent() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <br/><br/>
+            <h2>Upload QR code:</h2>
+            <div className="qr-code">
+                <div>
+                    <input type="file" onChange={handleChange} className="input-button"/>
+
+                </div>
+                <img src={uploadedQR} className="max-height" />
+                {file?
+                    <Button variant="contained" sx={{ backgroundColor: "#c5ab85" }} onClick={(e)=>uploadQRCode(e)}> Scan QR code</Button>
+                    :
+                    <></>
+                }
+            </div>
+            <br/><br/>
         </>
     )
 }
