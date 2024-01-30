@@ -22,7 +22,7 @@ import authService from "../../services/auth.service";
 import Chip from '@mui/material/Chip';
 import { AiOutlineCheck } from "react-icons/ai";
 import { GetUserById, UpdateUser, GetUsersWithOrdersByComapny } from '../../services/UserService';
-import { findEquipmentById, UpdateEquipment} from '../../services/EquipmentService';
+import { findEquipmentById, UpdateEquipment } from '../../services/EquipmentService';
 
 
 function OrdersInformationComponent() {
@@ -56,7 +56,8 @@ function OrdersInformationComponent() {
         var ordersList = [];
         for (const order of ordersRes.data) {
 
-            if (order.dateTimeInMs < Date.now()) {
+            console.log(Date.now())
+            if (order.dateTimeInMs + order.duration * 60000 < Date.now()) {
                 await DeleteById(order.id);
 
                 const UserRes = await GetUserById(order.userId);
@@ -128,8 +129,8 @@ function OrdersInformationComponent() {
         setOrders(filteredorders);
     }
 
-    const decreaseEquipmentQuantity = async (selectedOrder) =>{
-        for(var id of selectedOrder.equipmentIds){
+    const decreaseEquipmentQuantity = async (selectedOrder) => {
+        for (var id of selectedOrder.equipmentIds) {
             var equipmentRes = await findEquipmentById(id);
             var equipment = equipmentRes.data;
             equipment.quantity--;
@@ -216,8 +217,18 @@ function OrdersInformationComponent() {
                                             </>
                                         }
                                     </TableCell>
-                                    <TableCell><Button variant="contained" sx={{ backgroundColor: "#c5ab85" }} onClick={() => handlePickedUpClick(order)}><AiOutlineCheck /></Button></TableCell>
-
+                                    <TableCell>
+                                        <Button
+                                            variant="contained"
+                                            sx={{ backgroundColor: "#c5ab85" }}
+                                            onClick={() => handlePickedUpClick(order)}
+                                            disabled={!(order.dateTimeInMs < Date.now() && Date.now() <= order.dateTimeInMs + order.duration * 60000)}
+                                            
+                                        >
+                                            <AiOutlineCheck />
+                                        </Button>
+                                        {console.log(order.dateTimeInMs < Date.now() )}
+                                    </TableCell>
                                 </TableRow>
                             </>
                         ))}
