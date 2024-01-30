@@ -109,14 +109,14 @@ export default function HomePageContainer() {
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  Korisnici i rezervacije
+                  Korisnici
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Spisak svih registrovanih korisnika koji su rezervisali opremu u firmi i sve rezervacije
+                  Spisak svih registrovanih korisnika koji su rezervisali opremu u firmi.
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" component={Link} to={`/allCompanyOrders/${companyId}`} variant="contained" color="secondary">View</Button>
+                <Button size="small" component={Link} to={`/allUsersWithOrders/${companyId}`} variant="contained" color="secondary">View</Button>
               </CardActions>
             </Card>
 
@@ -133,11 +133,11 @@ export default function HomePageContainer() {
                   Oprema
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Unos informacija o preuzimanju opreme
+                  Unos informacija o preuzimanju opreme.
                 </Typography>
               </CardContent>
               <CardActions>
-                <Button size="small" component={Link} to="/home" variant="contained" color="secondary">View</Button>
+                <Button size="small" component={Link} to={`/ordersInformation/${companyId}`} variant="contained" color="secondary">View</Button>
               </CardActions>
             </Card>
 
