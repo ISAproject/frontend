@@ -30,6 +30,7 @@ import './reserve-equipment-component.css';
 import { UpdatePredefineDate } from '../../services/PredefinedDatesService';
 import { GetAllReservedDates } from '../../services/ReservedDateService'; 
 
+
 const steps = ['Select equipment', 'Pick a date', 'Pick date (optional)','Confirm'];
 
 export function StepperComponent({handleClose,companyId}) {
@@ -60,6 +61,7 @@ export function StepperComponent({handleClose,companyId}) {
     });
     //console.log(companyId)
     GetAllReservedDates().then((res)=>{
+      console.log(res.data)
       setReservedDates(res.data.filter(item=>item.companyId==companyId && item.dateTimeInMS >= new Date().getTime()));
     });
         
@@ -115,7 +117,9 @@ const handleOtherDates=()=>{
           dateTimeInMS: selectedOtherDate.dateTimeInMS,
           userId: userId,
           pickedUp: false,
-          companyId: company.id
+          companyId: company.id,
+          qrCodeStatus:0
+
         }
         console.log(reservedDate)
         if(validateDate(reservedDate)){
@@ -147,7 +151,8 @@ const handleOtherDates=()=>{
         dateTimeInMS: selectedDate.dateTimeInMs,
         userId: userId,
         pickedUp: false,
-        companyId: company.id
+        companyId: company.id,
+        qrCodeStatus:0
       }
       if(validateDate(reservedDate)){
         CreateReservedDateForMail(reservedDate,email).then((res)=>{
@@ -349,11 +354,11 @@ const handleOtherDates=()=>{
         <Box sx={{  margin: 'auto', mt: 5, bgcolor: 'background.paper' }} >
             <TableContainer component={Paper} sx={{ maxWidth: '100%',height:'40vh' }}>
                 <Table>
-                    <TableHead>
+                    <TableHead style={{backgroundColor:'#2196f3'}}>
                         <TableRow>
-                            <TableCell>Equipment name</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Grade</TableCell>
+                            <TableCell sx={{color:'white'}}>Equipment name</TableCell>
+                            <TableCell sx={{color:'white'}}>Type</TableCell>
+                            <TableCell sx={{color:'white'}}>Grade</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -412,8 +417,8 @@ const handleOtherDates=()=>{
                     />
                 </DemoContainer>
             </LocalizationProvider>
-            <TextField  color='secondary'  label="Duration" variant="outlined" onChange={handleDuration} value={time}/>
-            <Button onClick={handleSearch}>
+            <TextField  color='primary'  label="Duration" variant="outlined" onChange={handleDuration} value={time}/>
+            <Button onClick={handleSearch} variant='contained'>
              Search
             </Button>
           </Box>
@@ -435,6 +440,7 @@ const handleOtherDates=()=>{
             disabled={activeStep === 0}
             onClick={handleBack}
             sx={{ mr: 1 }}
+            variant='contained'
             >
             Back
             </Button>
@@ -442,12 +448,12 @@ const handleOtherDates=()=>{
             <Box sx={{ flex: '1 1 auto' }} />
             
             {activeStep === 1 ? (
-              <Button onClick={handleOtherDates}>
+              <Button variant='contained' color='primary' onClick={handleOtherDates} sx={{mr:"20px"}}>
                 Find other dates
               </Button>
             ) : null} 
 
-        <Button onClick={handleNext}>
+        <Button variant='contained' color='primary' onClick={handleNext}>
           {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         </Button>
         

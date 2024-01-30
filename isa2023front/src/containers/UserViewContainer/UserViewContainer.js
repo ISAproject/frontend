@@ -34,7 +34,7 @@ function UserViewContainer() {
     authService.logout();
   }
 
-  const [userData, setUserData] = useState(user);
+  const [userData, setUserData] = useState({});
   const [userId, setUserId] = useState(0);
 
   useEffect(() => {

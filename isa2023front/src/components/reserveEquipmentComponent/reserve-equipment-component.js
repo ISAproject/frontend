@@ -38,7 +38,7 @@ function ReserveEquipmentComponent({companyId}) {
     
     return (
     <React.Fragment >
-      <Button variant="contained" color='secondary' onClick={handleClickOpen}>  
+      <Button variant="contained" color='secondary' onClick={handleClickOpen} fullWidth>  
         Reserve equipment
       </Button>
       
