@@ -1,3 +1,29 @@
 .qr-code{
-    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.input-button{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+input[type=file]::file-selector-button {
+    margin-right: 20px;
+    border: none;
+    background: #c5ab85;
+    padding: 10px 20px;
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s ease-in-out;
+    border-radius: 10px;
+}
+
+input[type=file]::file-selector-button:hover {
+    background: #87765c;
+}
+.max-height{
+    max-height: 25vh;
 }
