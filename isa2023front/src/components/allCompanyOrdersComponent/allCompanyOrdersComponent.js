@@ -23,6 +23,8 @@ import Chip from '@mui/material/Chip';
 import { AiOutlineCheck } from "react-icons/ai";
 import { GetUserById, UpdateUser, GetUsersWithOrdersByComapny } from '../../services/UserService';
 import { findEquipmentById, UpdateEquipment} from '../../services/EquipmentService';
+import './allCompanyOrdersComponent.css';
+import {UploadQRCode} from "../../services/ReservedDateService";
 
 
 function AllCompanyOrdersComponent() {
@@ -32,7 +34,8 @@ function AllCompanyOrdersComponent() {
     const { id } = useParams();
     const [orders, setOrders] = useState([]);
     const [usersWithOrders, setUsersWithOrders] = useState([]);
-
+    const [file, setFile] = useState();
+    const [text, setText] = useState("");
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -147,6 +150,16 @@ function AllCompanyOrdersComponent() {
         }
     }
 
+    function handleChange(e) {
+        if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+    }
+
+    function uploadQRCode(e) {
+        const formData = new FormData();
+        formData.append("qrCode",file)
+        UploadQRCode(formData);
+    }
+
     return (
         <>
             <Box sx={{ flexGrow: 1 }}>
@@ -232,6 +245,22 @@ function AllCompanyOrdersComponent() {
                     </TableBody>
                 </Table>
             </TableContainer><br /><br />
+            <div className="qr-code">
+                <h2>Upload QR code:</h2>
+                <input type="file" onChange={handleChange} />
+                <img className="qr-code" src={file} />
+                {file?
+                    <button onClick={(e)=>uploadQRCode(e)}> Scan QR code</button>
+                    :
+                    <></>
+                }
+            </div>
+            {text?
+                    <p>{text}</p>
+                :
+                <p>kurac</p>
+            }
+            <br/><br/>
             <h2>Users that made reservations at this company</h2><br />
             <TableContainer component={Paper} sx={{ maxWidth: '80vw', margin: 'auto' }}>
                 <Table>

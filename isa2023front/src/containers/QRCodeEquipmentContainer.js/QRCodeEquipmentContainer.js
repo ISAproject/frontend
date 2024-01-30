@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 function QRCodeEquipmentContainer() {
     useEffect(()=>{
-        FindEquipmentByReservationDateId(7).then((res)=>{
+        FindEquipmentByReservationDateId(1).then((res)=>{
             setEquipment(res.data);
         })
     },[]);
