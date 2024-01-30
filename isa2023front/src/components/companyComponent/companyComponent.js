@@ -877,9 +877,19 @@ function CompanyComponent() {
                                                 : <></>}
                                         </>
                                     )}
+                                    <TrackingContractComponent companyId={id}/>
                                 </div>
                             ) : (
-                                <div><ReserveEquipmentComponent companyId={id} /><UserCreateContractComponent companyId={id}/><TrackingContractComponent companyId={id}/></div>
+                                <div></div>
+                            )}
+
+                            {user.role == 'ROLL_USER' ? (
+                                <div style={{ width: '80vw', margin: 'auto' }}>
+                                    <ReserveEquipmentComponent companyId={id} />
+                                    <UserCreateContractComponent companyId={id}/>
+                                </div>
+                            ) : (
+                                <div></div>
                             )}
                         </Stack>
                     </div>
