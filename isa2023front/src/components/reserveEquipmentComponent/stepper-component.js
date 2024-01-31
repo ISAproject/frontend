@@ -149,7 +149,7 @@ const handleOtherDates=()=>{
         equipments: checked,
         companyAdminId: selectedDate.companyAdminId,
         dateTimeInMS: selectedDate.dateTimeInMs,
-        userId: userId,
+        userId: -9,
         pickedUp: false,
         companyId: company.id,
         qrCodeStatus:0
