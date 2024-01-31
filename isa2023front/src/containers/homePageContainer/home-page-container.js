@@ -43,6 +43,7 @@ export default function HomePageContainer() {
   const [user, setUser] = useState({});
   const authUser = localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')) : null;
   const mapRef = useRef(null);
+  var controlRef = useRef(null);
   const [flag, setFlag] = useState(false);
 
   useEffect(() => {
@@ -64,7 +65,6 @@ export default function HomePageContainer() {
     }
   }, [authUser, mapRef]);
 
-  // ... (previous code)
 
   const handleMapCreated = (map) => {
     const control = L.routing.control({
@@ -90,19 +90,21 @@ export default function HomePageContainer() {
         return marker;
       },
     });
+
+    controlRef.current = control;
+    control.addTo(map);
+  };
+
+  const handleVanStart = () => {
+    var marker = L.marker([45.25167, 19.83694], { icon: vanIcon }).addTo(mapRef.current);
+
+    
   
-    var marker = L.marker([45.25167, 19.83694], { icon: vanIcon }).addTo(map);
-  
-    // Log waypoints to check if they are correct
-    console.log('Waypoints:', control.getWaypoints());
-  
-    control.on('routesfound', function (e) {
+    controlRef.current.on('routesfound', function (e) {
       console.log('Routes Found:', e.routes);
   
-      // Access the first route's coordinates
       var coordinates = e.routes[0].coordinates;
   
-      // Animate the marker along the route
       coordinates.forEach(function (coord, index) {
         setTimeout(function () {
           marker.setLatLng([coord.lat, coord.lng]);
@@ -110,8 +112,8 @@ export default function HomePageContainer() {
       });
     });
   
-    control.addTo(map);
-  };
+    controlRef.current.addTo(mapRef.current);
+  }
 
 
   return (
@@ -188,6 +190,7 @@ export default function HomePageContainer() {
           variant="contained"
           color='secondary'
           style={{ width: '700px', marginTop: '36px', paddingLeft: '64px', paddingRight: '64px' }}
+          onClick={handleVanStart}
         >
           Start delivery
         </Button>
