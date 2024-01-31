@@ -38,7 +38,7 @@ function UserCreateContractComponent({ companyId }) {
 
     useEffect(() => {
         if (authUser) {
-            if (reload) {
+ 
                 setReload(false);
                 GetUserByUsername(authUser.username).then((res) => {
                     setUser(res.data);
@@ -81,7 +81,7 @@ function UserCreateContractComponent({ companyId }) {
                     });
 
                 });
-            }
+            
         }
 
 
