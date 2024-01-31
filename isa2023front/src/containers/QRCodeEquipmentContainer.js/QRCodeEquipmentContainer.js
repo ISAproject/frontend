@@ -9,9 +9,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { useParams } from 'react-router-dom';
 function QRCodeEquipmentContainer() {
+    const { id } = useParams();
     useEffect(()=>{
-        FindEquipmentByReservationDateId(7).then((res)=>{
+        FindEquipmentByReservationDateId(id).then((res)=>{
             setEquipment(res.data);
         })
     },[]);

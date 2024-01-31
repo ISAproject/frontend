@@ -88,6 +88,10 @@ export default function HomePageContainer() {
                   <Button color="accent" component={Link} to="/companyAdmin">Profile</Button>
                   : <></>
                 }
+                {user?.role === 'ROLL_USER' ?
+                                            <Button color="accent" component={Link} to="/user/page">Profile</Button>
+                                            : <></>
+                                        }
                 <Button color="accent" component={Link} to="/companies">Companies</Button>
                 <Button color="accent" component={Link} onClick={logOut}>Logout</Button>
               </>
