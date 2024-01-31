@@ -30,6 +30,11 @@ export default function HomePageContainer() {
     iconUrl: require('../../utils/images/placeholder.png'),
   });
 
+  const vanIcon = new Icon({
+    iconSize: [48, 48],
+    iconUrl: require('../../utils/images/van.png'),
+  });
+
   const coordinates = [
     [45.25167, 19.83694],
     [45.26167, 19.84694],
@@ -59,6 +64,8 @@ export default function HomePageContainer() {
     }
   }, [authUser, mapRef]);
 
+  // ... (previous code)
+
   const handleMapCreated = (map) => {
     const control = L.routing.control({
       waypoints: [
@@ -79,14 +86,33 @@ export default function HomePageContainer() {
       },
       createMarker: function (i, waypoint, n) {
         const markerIcon = customIcon;
-    
         const marker = L.marker(waypoint.latLng, { icon: markerIcon });
         return marker;
       },
     });
-
+  
+    var marker = L.marker([45.25167, 19.83694], { icon: vanIcon }).addTo(map);
+  
+    // Log waypoints to check if they are correct
+    console.log('Waypoints:', control.getWaypoints());
+  
+    control.on('routesfound', function (e) {
+      console.log('Routes Found:', e.routes);
+  
+      // Access the first route's coordinates
+      var coordinates = e.routes[0].coordinates;
+  
+      // Animate the marker along the route
+      coordinates.forEach(function (coord, index) {
+        setTimeout(function () {
+          marker.setLatLng([coord.lat, coord.lng]);
+        }, 100 * index);
+      });
+    });
+  
     control.addTo(map);
   };
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
