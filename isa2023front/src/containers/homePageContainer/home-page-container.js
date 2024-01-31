@@ -50,7 +50,7 @@ export default function HomePageContainer() {
           console.error('Error fetching user:', error);
         });
     }
-  }, [authUser]);
+  }, []);
 
   useEffect(() => {
     if (authUser && mapRef.current && !flag) {
