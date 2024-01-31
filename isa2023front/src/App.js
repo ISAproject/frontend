@@ -25,6 +25,7 @@ import CompanyCalendarContainer from "./containers/companyCallendarContainer/Com
 import ChangePasswordContainer from "./containers/ChangePasswordContainer/ChangePasswordContainer";
 import OrdersInformationComponent from './components/ordersInformationComponent/ordersInformationComponent';
 import AllUsersWithOrdersComponent from './components/allUsersWithOrdersComponent/allUsersWithOrdersComponent';
+import ExampleComponent from "./components/ExampleForLoadBalancer/ExampleForLoadBalancer";
 
 //treba zamijeniti theme.js u stilovima kada se bude stilizovala aplikacija
 function App() {
@@ -52,6 +53,7 @@ function App() {
           <Route path="/changepassword" element={<ChangePasswordContainer/>}></Route>
           <Route path="/allUsersWithOrders/:id" element={<AllUsersWithOrdersComponent/>}></Route>
           <Route path="/ordersInformation/:id" element={<OrdersInformationComponent/>}></Route>
+          <Route path="/load-example" element={<ExampleComponent/>}></Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

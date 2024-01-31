@@ -22,7 +22,9 @@ import authService from "../../services/auth.service";
 import Chip from '@mui/material/Chip';
 import { AiOutlineCheck } from "react-icons/ai";
 import { GetUserById, UpdateUser, GetUsersWithOrdersByComapny } from '../../services/UserService';
-import { findEquipmentById, UpdateEquipment } from '../../services/EquipmentService';
+import { findEquipmentById, UpdateEquipment} from '../../services/EquipmentService';
+import './allCompanyOrdersComponent.css';
+import {UploadQRCode} from "../../services/ReservedDateService";
 
 
 function OrdersInformationComponent() {
@@ -31,7 +33,10 @@ function OrdersInformationComponent() {
 
     const { id } = useParams();
     const [orders, setOrders] = useState([]);
-
+    const [usersWithOrders, setUsersWithOrders] = useState([]);
+    const [file, setFile] = useState();
+    const [uploadedQR, setuploadedQR] = useState();
+    const [text, setText] = useState("");
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -140,6 +145,63 @@ function OrdersInformationComponent() {
         }
     }
 
+    function handleChange(e) {
+        if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+        setuploadedQR(URL.createObjectURL(e.target.files[0]));
+    }
+
+    const uploadQRCode = async (e)=> {
+        const formData = new FormData();
+        formData.append("qrCode",file)
+        var filesize = ((file.size/1024)/1024).toFixed(4);
+        if(filesize<0.5)
+        {
+            const id = await UploadQRCode(formData);
+            if (id.data === 9696969)
+                alert("QR code is already scanned!");
+            else {
+                if(id.data === 96969699)
+                    alert("This is not QR code!");
+                else {
+                    if (id) {
+                        filterTablesWithQRCode(id);
+                        decreaseEquipmentQuantityWithQRCode(id);
+                        alert("You successfully scanned QR code!");
+                    }
+                }
+            }
+        }
+        else
+        {
+            alert("File is too large!");
+        }
+    }
+    function filterTablesWithQRCode(selectedOrderId) {
+        var filteredorders = orders.filter(o => o.id != selectedOrderId.data);
+        setOrders(filteredorders);
+        var selectedOrder=orders.find(o=>o.id===selectedOrderId.data);
+        if(selectedOrder) {
+            if (!filteredorders.find(o => o.userId == selectedOrder.userId)) {
+                var filteredUsers = usersWithOrders.filter(u => u.id != selectedOrder.userId);
+                setUsersWithOrders(filteredUsers);
+            }
+        }
+    }
+
+    const decreaseEquipmentQuantityWithQRCode = async (selectedOrderId) =>{
+        var selectedOrder=orders.find(o=>o.id===selectedOrderId.data);
+        if(selectedOrder) {
+            for (var id of selectedOrder.equipmentIds) {
+                var equipmentRes = await findEquipmentById(id);
+                var equipment = equipmentRes.data;
+                equipment.quantity--;
+
+                var updatedEquipmentRes = await UpdateEquipment(id, equipment);
+                console.log(equipment.quantity, updatedEquipmentRes.data.quantity)
+            }
+        }
+    }
+
     return (
         <>
             <Box sx={{ flexGrow: 1 }}>
@@ -223,7 +285,7 @@ function OrdersInformationComponent() {
                                             sx={{ backgroundColor: "#c5ab85" }}
                                             onClick={() => handlePickedUpClick(order)}
                                             disabled={!(order.dateTimeInMs < Date.now() && Date.now() <= order.dateTimeInMs + order.duration * 60000)}
-                                            
+
                                         >
                                             <AiOutlineCheck />
                                         </Button>
@@ -235,6 +297,21 @@ function OrdersInformationComponent() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <br/><br/>
+            <h2>Upload QR code:</h2>
+            <div className="qr-code">
+                <div>
+                    <input type="file" onChange={handleChange} className="input-button"/>
+
+                </div>
+                <img src={uploadedQR} className="max-height" />
+                {file?
+                    <Button variant="contained" sx={{ backgroundColor: "#c5ab85" }} onClick={(e)=>uploadQRCode(e)}> Scan QR code</Button>
+                    :
+                    <></>
+                }
+            </div>
+            <br/><br/>
         </>
     )
 }

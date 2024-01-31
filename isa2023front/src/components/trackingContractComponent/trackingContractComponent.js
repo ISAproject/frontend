@@ -53,7 +53,7 @@ export function TrackingContractComponent({companyId}) {
 
     return (
         <>
-            <Button variant="contained" color='secondary' onClick={handleClickOpen}>Track orders</Button>
+            <Button variant="contained" color='secondary' onClick={handleClickOpen} fullWidth sx={{mt:"20px"}}>Track orders</Button>
             {/* <Button variant="contained" color='secondary' onClick={()=>calculateProgress(1)}>debug</Button> */}
             <Dialog open={open} onClose={handleClickClose} maxWidth='lg' fullWidth >
                 <DialogTitle>Tracking orders:</DialogTitle>

@@ -158,7 +158,7 @@ function UserCreateContractComponent({companyId}) {
     };
     return (
         <>
-            <Button variant="contained" color='secondary' onClick={handleClickOpen}>Contract</Button>
+            <Button variant="contained" color='secondary' onClick={handleClickOpen} fullWidth sx={{mt:"20px"}}>Contract</Button>
             <Dialog open={open} onClose={handleClose} maxWidth='lg' fullWidth >
                 <DialogTitle>Contract</DialogTitle>
                 <DialogContent>

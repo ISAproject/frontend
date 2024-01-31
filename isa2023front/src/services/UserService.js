@@ -53,3 +53,13 @@ export const GetUsersWithOrdersByComapny = (companyId) =>{
 
     return axios.get("http://localhost:8090/api/v1/user/usersWithOrders/" + companyId, options)
 }
+
+export const LoadExample=(userId)=>{
+    const headers = {
+        'Access-Control-Allow-Origin':'http://localhost:8091'
+    };
+    const options = {
+        headers: headers,
+    };
+    return axios.get("http://localhost:8090/api/"+userId,options);
+}

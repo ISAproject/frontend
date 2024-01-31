@@ -169,7 +169,7 @@ function UserReservationsComponent({userId,flag}) {
                 <Button color={dateClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'7vw'}} onClick={handleSortByDate}>Date&nbsp; {dateFlag?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
                 <Button color={durationClicked==false ? "accent" : "secondary"} variant='contained' sx={{width:'7vw'}} onClick={handleSortByDuration}>Duration&nbsp; {durationFlag?<FontAwesomeIcon icon={faArrowUp} />:<FontAwesomeIcon icon={faArrowDown} />}</Button>
             </Box>
-            <TableContainer component={Paper} sx={{ maxWidth: '100%',minHeight:'40vh' }}>
+            <TableContainer component={Paper} sx={{ maxWidth: '100%',height:'40vh'}}>
                 <Table>
                     <TableHead>
                         <TableRow style={{backgroundColor:'#004D40'}}>
@@ -178,13 +178,13 @@ function UserReservationsComponent({userId,flag}) {
                             {flag?null:<TableCell></TableCell>}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody sx={{overflow:"auto"}}>
                     {reservedDates.map((date) => (
-                            <TableRow key={date.id}>
+                            <TableRow key={date.id}   sx={{ height: '8vh' }}>
                                 <TableCell>{date.companyName}</TableCell>
                                 <TableCell>{formatDate(date.dateTimeInMS,date.duration)}</TableCell>
                                 {flag?null:<TableCell>
-                                    <Button color="secondary" onClick={()=>handleCancel(date)}>Cancel</Button>
+                                    <Button color="secondary" onClick={()=>handleCancel(date)} >Cancel</Button>
                                 </TableCell>}
                             </TableRow>
                         ))}

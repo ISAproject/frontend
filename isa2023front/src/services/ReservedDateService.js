@@ -114,3 +114,14 @@ export const UpdatePickedUpStatus = (id, status) => {
 
     return axios.put("http://localhost:8090/api/v1/reservedDate/updatePickedUpStatus/" + id + "/" + status, null, options);
 }
+
+export const UploadQRCode = (data) => {
+    const options = {
+        headers: {
+            //'Authorization': 'Bearer ' + (localStorage.getItem('authUser') ? JSON.parse(localStorage.getItem('authUser')).accessToken : null),
+            'Content-Type': 'multipart/form-data',
+        },
+    };
+
+    return axios.post("http://localhost:8090/api/v1/reservedDate/uploadQRCode", data,options);
+}
