@@ -13,7 +13,7 @@ function ExampleComponent() {
     }, []);
     const getUser = async() => {
         if(i%5==0 || i%5===1) {
-            const user1 = await LoadExample(-30);
+            const user1 = await LoadExample(-3);
             setUser(user1);
             setI(i+1)
         }
