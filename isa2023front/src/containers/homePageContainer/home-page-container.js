@@ -18,6 +18,7 @@ import L from 'leaflet';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import {SendCoordinates} from '../../services/MapService';
 
 export default function HomePageContainer() {
   function logOut() {
@@ -97,18 +98,24 @@ export default function HomePageContainer() {
 
   const handleVanStart = () => {
     var marker = L.marker([45.25167, 19.83694], { icon: vanIcon }).addTo(mapRef.current);
-
-    
-  
     controlRef.current.on('routesfound', function (e) {
-      console.log('Routes Found:', e.routes);
+      //console.log('Routes Found:', e.routes);
   
       var coordinates = e.routes[0].coordinates;
-  
+      let coordinate=[]
+      coordinates.forEach((c,index)=>{
+        coordinate[index]={lang:c.lng, lat:c.lat}
+      })
+     //console.log(coordinate)
+
       coordinates.forEach(function (coord, index) {
         setTimeout(function () {
-          marker.setLatLng([coord.lat, coord.lng]);
-        }, 100 * index);
+          SendCoordinates({lang:coord.lng, lat:coord.lat}).then((res)=>{
+            marker.setLatLng([res.data.lat, res.data.lang]);
+            //console.log([res.data.lat, res.data.lang])
+          })
+
+        }, 1000 * index);
       });
     });
   
