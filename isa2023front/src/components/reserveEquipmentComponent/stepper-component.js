@@ -113,7 +113,7 @@ const handleOtherDates=()=>{
         let reservedDate={
           duration: selectedOtherDate.duration,
           equipments: checked,
-          companyAdminId: selectedOtherDate.companyAdminId,
+          companyAdminId: -10,
           dateTimeInMS: selectedOtherDate.dateTimeInMS,
           userId: userId,
           pickedUp: false,
@@ -149,7 +149,7 @@ const handleOtherDates=()=>{
         equipments: checked,
         companyAdminId: selectedDate.companyAdminId,
         dateTimeInMS: selectedDate.dateTimeInMs,
-        userId: -9,
+        userId: userId,
         pickedUp: false,
         companyId: company.id,
         qrCodeStatus:0
