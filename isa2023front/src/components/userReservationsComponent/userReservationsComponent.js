@@ -14,16 +14,29 @@ import {GetAllPredefinedDates} from "../../services/PredefinedDateService";
 import {UpdatePredefineDate} from "../../services/PredefinedDatesService";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import { UpdateUser } from "../../services/UserService";
+import { GetUserById } from "../../services/UserService";
 function UserReservationsComponent({userId,flag}) {
+    const [user, setUser] = useState({});
     useEffect(()=>{
         if(userId==0)return;
         GetReservedDatesByUserId(userId,flag).then((res)=>{
-            setReservedDates(res.data);
-            
+            setReservedDates(res.data);      
         });
+        GetUserById(userId).then((res)=>{
+            setUser(res.data);
+        });  
         
       },[userId]);
     const [reservedDates,setReservedDates] = useState([]);
+    const [open, setOpen] = React.useState(false);
+    const [clickedDate, setClickedDate] = useState(null);
 
 
     const formatDate=(milliseconds,duration)=>{
@@ -51,29 +64,65 @@ function UserReservationsComponent({userId,flag}) {
     
     const handleCancel=(date)=>{
         if(new Date().getTime()+24*60*60*1000>=date.dateTimeInMS){
-            toast.error("You cant cancel reservetion 24 hours before it starts!");
+            setClickedDate(date);
+            setOpen(true);
             return;
         }
         // console.log(GetAllPredefinedDates());
         // console.log(date);
-        
-        DeleteReservedDate(date.id).then(()=>{
-            setReservedDates([...reservedDates].filter(item=>item.id!=date.id));
-            if(date.companyAdminId!=0){
-                GetAllPredefinedDates().then((res)=>{
-                    let object=res.data.filter(item=>item.companyAdminId==date.companyAdminId && item.dateTimeInMs==date.dateTimeInMS && item.duration==date.duration)[0];
-                    object.free=true;
-                    UpdatePredefineDate(object).then(()=>{
-                        console.log('works');
-                        toast.success("Your reservation has been deleted!");
+        cancelDate(date);
+    }
+
+    const cancelDate = (date) => {
+        if(date.dateTimeInMS > 0){
+            DeleteReservedDate(date.id).then(()=>{
+                setReservedDates([...reservedDates].filter(item=>item.id!=date.id));
+                if(date.companyAdminId!=0){
+                    GetAllPredefinedDates().then((res)=>{
+                        let object=res.data.filter(item=>item.companyAdminId==date.companyAdminId && item.dateTimeInMs==date.dateTimeInMS && item.duration==date.duration)[0];
+                        object.free=true;
+                        UpdatePredefineDate(object).then(()=>{
+                            console.log('works');
+                            toast.success("Your reservation has been deleted!");
+                            setClickedDate(null);
+                            setOpen(false);
+                        });
                     });
-                });
-            }else{
-                toast.success("Your reservation has been deleted!");
-            }
-            
-        });
-    } 
+                }else{
+                    setClickedDate(null);
+                    setOpen(false);
+                    toast.success("Your reservation has been deleted!");
+                    let prevUser = {
+                        id: user.id,
+                        email: user.email,
+                        username: user.username,
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        state: user.state,
+                        city: user.city,
+                        tel_number: user.tel_number,
+                        password: user.password,
+                        role: user.role,
+                        company_info: user.company_info,
+                        occupation: user.occupation,
+                        verified: user.verified,
+                        penaltyPoints: user.penaltyPoints,
+                        firstLogin: user.firstLogin
+                    };           
+                    if(new Date().getTime()+24*60*60*1000>=date.dateTimeInMS){
+                        prevUser.penaltyPoints += 2;
+                    }
+                    else{
+                        prevUser.penaltyPoints += 1;
+                    }
+                    setUser(prevUser);
+                    console.log(prevUser);
+                    UpdateUser(userId, prevUser);
+                }
+                
+            });
+        }
+    }
     
     const [dateClicked,setDateClicked] = useState(false);
     const [durationClicked,setDurationClicked] = useState(false);
@@ -106,6 +155,10 @@ function UserReservationsComponent({userId,flag}) {
             setReservedDates([...reservedDates].sort((a,b)=>b.duration-a.duration));
         }
     }
+    const handleClose = () => {
+        setClickedDate(null);
+        setOpen(false);
+      };
     
     return (
         <React.Fragment>
@@ -150,6 +203,25 @@ function UserReservationsComponent({userId,flag}) {
         draggable={false}
         pauseOnHover={false}
         theme="colored"/>
+
+        <Dialog
+        open={open}
+        keepMounted
+        onClose={handleClose}
+        aria-describedby="alert-dialog-slide-description"
+        >
+        <DialogTitle><CampaignIcon fontSize="large"/></DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            You tried to cancel an order that should arrive in less than 24 hours, if you proceed you will get additional penalty.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="secondary" onClick={()=>cancelDate(clickedDate)}>Cancel Order</Button>
+          <Button color="secondary" onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
     </React.Fragment>
     );
   }
