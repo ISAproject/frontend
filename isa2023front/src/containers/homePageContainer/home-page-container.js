@@ -300,46 +300,7 @@ export default function HomePageContainer() {
       }
       <>
       <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="secondary">
-        <Toolbar>
-          <IconButton size="large" edge="start" color="accent" aria-label="menu" sx={{ mr: 2 }}>
-            <MonitorHeartIcon />
-          </IconButton>
-          <Typography variant="h6" color="accent" component="div" sx={{ flexGrow: 1 }}>
-            <span style={{ fontWeight: 'bold' }}>MediConnect</span>
-          </Typography>
-          <Button color="accent" component={Link} to="/home">
-            Home
-          </Button>
-
-          {authUser ? (
-            <>
-              {user?.role === 'ROLL_COMPANY_ADMIN' ? (
-                <Button color="accent" component={Link} to="/companyAdmin">
-                  Profile
-                </Button>
-              ) : (
-                <></>
-              )}
-              <Button color="accent" component={Link} to="/companies">
-                Companies
-              </Button>
-              <Button color="accent" component={Link} onClick={logOut}>
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button color="accent" component={Link} to="/login">
-                Login
-              </Button>
-              <Button color="accent" component={Link} to="/register">
-                Register
-              </Button>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
+      
       {authUser ? (
         <Box
         key="mapContainer"
